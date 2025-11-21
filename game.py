@@ -1,5 +1,5 @@
 import pygame
-
+from cars import *
 from player import Player
 from map import Map
 
@@ -18,10 +18,15 @@ chicken = Player(250,850)
 
 tile_size = 50
 
+#11x18 Grid
+
 
 
 map = Map(SCREEN_W,SCREEN_H).initialize_map()
 
+spawn()
+
+draw_cars(screen, listofCars)
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -36,6 +41,16 @@ while running:
     map.draw_grid(screen)
     time_delta = clock.tick(30)
     pygame.display.flip()
+
+    dt = clock.tick(60) / 1000.0
+
+    updatecar_pos()
+
+
+
+
+
+
 
 
 pygame.quit()

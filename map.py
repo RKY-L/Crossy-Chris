@@ -6,6 +6,7 @@ class Map:
         self.grid = []
         self.s_width = screen_w
         self.s_height = screen_h
+        self.speed = 1
     
     def initialize_map(self):
         map = []
