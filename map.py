@@ -6,6 +6,7 @@ class Map:
         self.grid = []
         self.s_width = screen_w
         self.s_height = screen_h
+        self.player_pos = [0,0]
     
     def initialize_map(self):
         map = []
@@ -20,3 +21,10 @@ class Map:
             pygame.draw.line(screen, (200,200,200), (x,0), (x,self.s_height))
         for y in range(0, self.s_height, self.tile_size):
             pygame.draw.line(screen, (200,200,200), (0,y), (self.s_width,y))
+
+    def update_player_pos(self,x,y):
+        self.grid[self.player_pos[1]][self.player_pos[0]] = 0
+        self.player_pos[0] = (x//50)
+        self.player_pos[1] = (y//50)
+        self.grid[self.player_pos[1]][self.player_pos[0]] = 1
+        print(self.grid)

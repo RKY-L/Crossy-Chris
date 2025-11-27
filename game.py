@@ -26,14 +26,14 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-
+        elif event.type == pygame.KEYDOWN:
+            chicken.key_pressed(event.key)
     
+    map.update_player_pos(chicken.player.x,chicken.player.y)
+    screen.fill((255,255,255))
     pygame.draw.rect(screen, (0,255,0), chicken.player)
-    pygame.display.update()
-
-
     map.draw_grid(screen)
+    pygame.display.update()
     time_delta = clock.tick(30)
     pygame.display.flip()
 
