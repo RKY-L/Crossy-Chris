@@ -8,8 +8,9 @@ class Player():
 
     def move_player(self,direction,distance):
         if(direction == "x"):
+            if(not (self.player.x + distance < 0) and not (self.player.x + distance > 500)):
+                self.player.x += distance
             print(self.player.x)
-            self.player.x += distance
         else:
             self.player.y += distance
         #detect collision here?

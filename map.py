@@ -27,4 +27,3 @@ class Map:
         self.player_pos[0] = (x//50)
         self.player_pos[1] = (y//50)
         self.grid[self.player_pos[1]][self.player_pos[0]] = 1
-        print(self.grid)
