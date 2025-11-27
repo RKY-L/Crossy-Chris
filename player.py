@@ -10,12 +10,11 @@ class Player():
         if(direction == "x"):
             if(not (self.player.x + distance < 0) and not (self.player.x + distance > 500)):
                 self.player.x += distance
-            print(self.player.x)
         else:
-            self.player.y += distance
+            if(not (self.player.y + distance > 850)):
+                self.player.y += distance
         #detect collision here?
         
-
     def key_pressed(self,key):
         if key == pygame.K_a:
             self.move_player("x",-50)
