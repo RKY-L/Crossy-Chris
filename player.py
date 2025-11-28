@@ -11,8 +11,12 @@ class Player():
             if(not (self.player.x + distance < 0) and not (self.player.x + distance > 500)):
                 self.player.x += distance
         else:
-            if(not (self.player.y + distance > 850)):
+            if(self.player.y + distance == 400):
+                #start moving camera?
+                pass
+            elif(not (self.player.y + distance > 850)):
                 self.player.y += distance
+            print(self.player.y)
         #detect collision here?
         
     def key_pressed(self,key):

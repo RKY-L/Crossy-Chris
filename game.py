@@ -14,7 +14,7 @@ screen.fill((255, 255, 255))
 clock = pygame.time.Clock()
 
 running = True
-chicken = Player(250,850)
+chicken = Player(250,700)
 
 tile_size = 50
 
