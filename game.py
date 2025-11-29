@@ -17,6 +17,7 @@ clock = pygame.time.Clock()
 
 
 background = pygame.image.load("exp_bg.png")
+chicken = pygame.image.load("chicken.png")
 world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
 map = Map(SCREEN_W,WORLD_H).initialize_map()
 player = Player(250,WORLD_H - 150,map)
@@ -38,7 +39,7 @@ while running:
             map.update_player_pos(player.x,player.y)
 
 
-    pygame.draw.rect(screen, (0,255,0), (player.x,player.y - camera.y, player.width, player.height))
+    screen.blit(chicken, (player.x, player.y - camera.y))
     map.draw_grid(screen)
 
 
