@@ -16,7 +16,7 @@ screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
 clock = pygame.time.Clock()
 
 
-background = pygame.image.load("test_background.jpg")
+background = pygame.image.load("exp_bg.png")
 world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
 map = Map(SCREEN_W,WORLD_H).initialize_map()
 player = Player(250,WORLD_H - 150,map)
@@ -41,7 +41,7 @@ while running:
     pygame.draw.rect(screen, (0,255,0), (player.x,player.y - camera.y, player.width, player.height))
     map.draw_grid(screen)
 
-    
+
     pygame.display.update()
     pygame.display.flip()
     clock.tick(30)
