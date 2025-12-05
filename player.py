@@ -13,10 +13,14 @@ class Player():
     def move_player(self,direction,distance):
         if(direction == "x"):
             if(self.x + distance >= 0 and self.x + distance < self.map.width):
+                if self.map.check_car(self.x + distance, self.y):
+                    return True
                 if not self.map.check_collision(self.x + distance, self.y):
                     self.x += distance
         else:
             if(self.y + distance >= 0 and self.y + distance < self.map.height):
+                if self.map.check_car(self.x, self.y + distance):
+                    return True
                 if not self.map.check_collision(self.x, self.y + distance):
                     self.y += distance
         

@@ -39,7 +39,10 @@ while running:
             player.key_pressed(event.key)
             camera.update_camera(event.key,player.y,screen,world)
             map.update_player_pos(player.x,player.y)
-
+            
+    #checks if car hits player
+    if map.check_car(player.x, player.y):
+        player.alive_state = False
 
     screen.blit(chicken, (player.x, player.y - camera.y))
     map.draw_grid(screen)
