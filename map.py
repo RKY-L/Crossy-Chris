@@ -13,7 +13,7 @@ class Map:
         map = []
         row = self.width//self.tile_size
         for y in range(0, self.height, self.tile_size):
-            map.append([0] * row)
+            map.append([""] * row)
         self.grid = map
         return self
     
@@ -24,20 +24,21 @@ class Map:
             pygame.draw.line(screen, (200,200,200), (0,y), (self.width,y))
 
     def update_player_pos(self,x,y):
-        self.grid[self.player_pos[1]][self.player_pos[0]] = 0
+        self.grid[self.player_pos[1]][self.player_pos[0]] = ""
         self.player_pos[0] = (x//50)
         self.player_pos[1] = (y//50)
-        self.grid[self.player_pos[1]][self.player_pos[0]] = 1
+        self.grid[self.player_pos[1]][self.player_pos[0]] = "@"
+        print(self.player_pos[1],self.player_pos[0])
 
-    def add_obstacle(self, tile_x, tile_y):
-        self.obstacles.append((tile_x, tile_y))
+    def add_obstacle(self, tile_y, tile_x):
+        self.obstacles.append((tile_y, tile_x))
         
-    def check_collision(self, x, y):
+    def check_collision(self, y, x):
         tile_x = x // 50
         tile_y = y // 50
-        return (tile_x, tile_y) in self.obstacles
+        return (tile_y, tile_x) in self.obstacles
     
-    def check_car(self, x, y):
+    def check_car(self, y,x):
         tile_x = x // 50
         tile_y = y // 50
-        return self.grid[tile_x][tile_y] == 'x'
+        return self.grid[tile_y][tile_x] == 'x'
