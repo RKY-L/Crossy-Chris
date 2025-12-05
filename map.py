@@ -38,4 +38,6 @@ class Map:
         return (tile_x, tile_y) in self.obstacles
     
     def check_car(self, x, y):
-        return
+        tile_x = x // 50
+        tile_y = y // 50
+        return self.grid[tile_x][tile_y] == 'x'
