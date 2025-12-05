@@ -7,6 +7,7 @@ class Map:
         self.width = world_w
         self.height = world_h
         self.player_pos = [0,0]
+        self.obstacles = []
     
     def initialize_map(self):
         map = []
@@ -27,3 +28,11 @@ class Map:
         self.player_pos[0] = (x//50)
         self.player_pos[1] = (y//50)
         self.grid[self.player_pos[1]][self.player_pos[0]] = 1
+
+    def add_obstacle(self, tile_x, tile_y):
+        self.obstacles.append((tile_x, tile_y))
+        
+    def check_collision(self, x, y):
+        tile_x = x // 50
+        tile_y = y // 50
+        return (tile_x, tile_y) in self.obstacles
