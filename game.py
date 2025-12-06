@@ -1,4 +1,5 @@
 import pygame
+import random
 
 from player import Player
 from map import Map
@@ -29,9 +30,18 @@ player = Player(250,WORLD_H - 150,map)
 camera = Camera(CAMERA_W,CAMERA_H,WORLD_H)
 
 #obstacles
+carRows = [25, 23, 22, 19, 15, 13, 12, 11, 9, 8, 5, 2]
+cars = []
+cartimer = 0
 map.add_obstacle(24,2)
 
-
+def spawncars():
+    for row in carRows:
+        coin = random.randint(0,3)
+        if coin == 1:
+            car = Car(row)
+            car.direction = random.randint(0,1)
+            cars.append(car)
 
 running = True
 tile_size = 50
@@ -45,11 +55,17 @@ while running:
             camera.update_camera(event.key,player.y,screen,world)
             map.update_player_pos(player.x,player.y)
 
-    car.update(map)
+    if cartimer % 720 == 0:
+        spawncars()
+    cartimer += 30
     camera.update_camera(0,0,screen,world)
     screen.blit(chicken, (player.x, player.y - camera.y))
     map.draw_grid(screen)
-    screen.blit(carimg, (car.x, car.y - camera.y))
+    for car in cars:
+        car.update(map)
+        screen.blit(carimg, (car.x, car.y - camera.y))
+        if car.x < -150 or car.x > 650:
+            cars.remove(car)
 
 
     pygame.display.update()
