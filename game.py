@@ -27,14 +27,19 @@ carRows = {25:-1, 23:1, 22:-1, 19:-1, 15:1, 13:-1, 12:1, 11:1, 9:-1, 8:1, 5:-1, 
 cartimer = 0
 
 class Game:
-    def __init__(self,highscore=0):
+    def refresh(self):
+        self.highscore = self.score
         self.map = Map(SCREEN_W,WORLD_H,self).initialize_map()
         self.player = Player(250,WORLD_H - 150,self.map)
         self.camera = Camera(CAMERA_W,CAMERA_H,WORLD_H,self)
-        self.cars = []
         self.score = 0
         self.best_y = self.player.y
+
+    def __init__(self,highscore=0):
+        self.score = 0
+        self.cars = []
         self.highscore = highscore
+        self.refresh()
 
     def spawncars(self):
         for row in carRows:
@@ -47,11 +52,8 @@ class Game:
                 else:
                     car.x = -100
 
-    def refresh(self):
-        self.__init__(self.score)
-
     def win(self):
-        self.__init__(self.score)
+        self.refresh()
 game = Game()
 
 
@@ -73,7 +75,7 @@ while running:
     cartimer += 1
     game.camera.update_camera(0,0,screen,world)
     screen.blit(chicken, (game.player.x, game.player.y - game.camera.y))
-    game.map.draw_grid(screen)
+    #game.map.draw_grid(screen)
 
     new_cars = []
     for car in game.cars:
