@@ -28,30 +28,17 @@ class Map:
         self.player_pos[0] = (x//50)
         self.player_pos[1] = (y//50)
         self.grid[self.player_pos[1]][self.player_pos[0]] = "@"
-        print(self.player_pos[1],self.player_pos[0])
 
     def add_obstacle(self, tile_y, tile_x):
-        self.obstacles.append((tile_y, tile_x))
+        self.grid[tile_y][tile_x] = "T"
         
     def check_collision(self, y, x):
         tile_x = x // 50
         tile_y = y // 50
-        return (tile_y, tile_x) in self.obstacles
-    
-    def check_car(self, y,x):
-        tile_x = x // 50
-        tile_y = y // 50
-
-        if self.grid[tile_y][tile_x] == 'x':
-            print("Collision with car detected at:", tile_y, tile_x)
-            return True
-
-    def updatecarpos(self,old_y, old_x,new_x):
-        old_col = old_x // self.tile_size
-        old_row = old_y // self.tile_size
-        new_col = new_x // self.tile_size
-        new_row = old_row
-        if old_col < 11:
-            print(old_col," ",old_row)
-            self.grid[old_row][old_col] = ""
-            self.grid[new_row][new_col] = "x"
+        if self.grid[tile_y][tile_x] == "T":
+            return "Tree"
+        elif self.grid[tile_y][tile_x] == 'x':
+            return "Car"
+        elif self.grid[tile_y][tile_x] == "@":
+            return "Player"
+        return None

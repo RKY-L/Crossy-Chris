@@ -28,6 +28,8 @@ player = Player(250,WORLD_H - 150,map)
 
 camera = Camera(CAMERA_W,CAMERA_H,WORLD_H)
 
+#obstacles
+map.add_obstacle(24,2)
 
 
 
