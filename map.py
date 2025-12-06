@@ -42,3 +42,13 @@ class Map:
         elif self.grid[tile_y][tile_x] == "@":
             return "Player"
         return None
+    
+    def updatecarpos(self,old_y, old_x,new_x):
+        old_col = old_x // self.tile_size
+        old_row = old_y // self.tile_size
+        new_col = new_x // self.tile_size
+        new_row = old_row
+        if old_col < 11:
+            print(old_col," ",old_row)
+            self.grid[old_row][old_col] = ""
+            self.grid[new_row][new_col] = "x"
