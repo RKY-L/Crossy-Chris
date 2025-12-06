@@ -14,10 +14,8 @@ class Car:
             new_x = self.x - 50
             map.updatecarpos(self.y, self.x,new_x)
             self.x = new_x
+            
 
 
 
-#Give road and it will move along this row. 
-def carmovement(road):
-    car = Car(road)
     

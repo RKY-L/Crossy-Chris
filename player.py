@@ -13,11 +13,16 @@ class Player():
     def move_player(self,direction,distance):
         if(direction == "x"):
             if(self.x + distance >= 0 and self.x + distance < self.map.width):
-                self.x += distance
+                if self.map.check_car(self.y,self.x + distance):
+                    return True
+                if not self.map.check_collision(self.y,self.x + distance):
+                    self.x += distance
         else:
             if(self.y + distance >= 0 and self.y + distance < self.map.height):
-                self.y += distance
-        #detect collision here?
+                if self.map.check_car(self.y + distance,self.x):
+                    return True
+                if not self.map.check_collision(self.y + distance,self.x):
+                    self.y += distance
         
     def key_pressed(self,key):
         if key == pygame.K_a:

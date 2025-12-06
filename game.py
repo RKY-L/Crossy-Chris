@@ -19,11 +19,13 @@ clock = pygame.time.Clock()
 
 background = pygame.image.load("exp_bg.png")
 chicken = pygame.image.load("chicken.png")
+carpng = pygame.image.load("car.png")
+car = Car(25)
 carimg = pygame.image.load("car.png")
 world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
 map = Map(SCREEN_W,WORLD_H).initialize_map()
 player = Player(250,WORLD_H - 150,map)
-car = Car(25)
+
 camera = Camera(CAMERA_W,CAMERA_H,WORLD_H)
 
 
