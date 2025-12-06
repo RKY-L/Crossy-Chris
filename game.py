@@ -22,17 +22,19 @@ chicken = pygame.image.load("chicken.png")
 carpng = pygame.image.load("car.png")
 carimg = pygame.image.load("car.png")
 world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
-carRows = [25, 23, 22, 19, 15, 13, 12, 11, 9, 8, 5, 1]
+carRows = []
+#[25, 23, 22, 19, 15, 13, 12, 11, 9, 8, 5, 1]
 cartimer = 0
 
 class Game:
-    def __init__(self):
+    def __init__(self,highscore=0):
         self.map = Map(SCREEN_W,WORLD_H,self).initialize_map()
         self.player = Player(250,WORLD_H - 150,self.map)
         self.camera = Camera(CAMERA_W,CAMERA_H,WORLD_H,self)
         self.cars = []
         self.score = 0
         self.best_y = self.player.y
+        self.highscore = highscore
 
     def spawncars(self):
         for row in carRows:
@@ -41,13 +43,15 @@ class Game:
                 self.cars.append(car)
 
     def refresh(self):
-        self.__init__()
+        self.__init__(self.score)
+
+    def win(self):
+        self.__init__(self.score)
 game = Game()
 
 
 running = True
 tile_size = 50
-font = pygame.font.SysFont(None, 100)
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -58,7 +62,6 @@ while running:
             if game.player.y < game.best_y:
                 game.score += 1
                 game.best_y = game.player.y
-                print(game.score)
 
     if cartimer % 30 == 0:
         game.spawncars()
@@ -75,7 +78,8 @@ while running:
         screen.blit(carimg, (car.x, car.y - game.camera.y))
     game.cars = new_cars
 
-    screen.blit(font.render(str(game.score), True, (255, 255, 255)), (25, 25))
+    screen.blit(pygame.font.SysFont(None, 100).render(str(game.score), True, (255, 255, 255)), (25, 25))
+    screen.blit(pygame.font.SysFont(None, 50).render("Highscore: " + str(game.highscore), True, (255, 255, 255)), (10, 850))
     pygame.display.update()
     pygame.display.flip()
     clock.tick(30)

@@ -11,9 +11,11 @@ class Camera:
 
     
     def update_camera(self,key_pressed,player_y,screen,world):
+        if key_pressed and (player_y - 50 - self.y) == -50:
+            self.game.win()
+        if key_pressed and (player_y - 50 - self.y) > 800:
+            self.game.refresh()
         if key_pressed == pygame.K_s:
-            if player_y - 50 - self.y > 800:
-                self.game.refresh()
             if self.checkpoint == 0:
                     self.checkpoint = player_y - 50
         elif key_pressed == pygame.K_w and (player_y == self.checkpoint or self.checkpoint == 0):
