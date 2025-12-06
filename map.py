@@ -7,7 +7,6 @@ class Map:
         self.width = world_w
         self.height = world_h
         self.player_pos = [0,0]
-        self.obstacles = []
     
     def initialize_map(self):
         map = []
@@ -28,17 +27,17 @@ class Map:
         self.player_pos[0] = (x//50)
         self.player_pos[1] = (y//50)
         self.grid[self.player_pos[1]][self.player_pos[0]] = "@"
-        print(self.player_pos[1],self.player_pos[0])
 
     def add_obstacle(self, tile_y, tile_x):
-        self.obstacles.append((tile_y, tile_x))
+        self.grid[tile_y][tile_x] = "T"
         
     def check_collision(self, y, x):
         tile_x = x // 50
         tile_y = y // 50
-        return (tile_y, tile_x) in self.obstacles
-    
-    def check_car(self, y,x):
-        tile_x = x // 50
-        tile_y = y // 50
-        return self.grid[tile_y][tile_x] == 'x'
+        if self.grid[tile_y][tile_x] == "T":
+            return "Tree"
+        elif self.grid[tile_y][tile_x] == 'x':
+            return "Car"
+        elif self.grid[tile_y][tile_x] == "@":
+            return "Player"
+        return None
