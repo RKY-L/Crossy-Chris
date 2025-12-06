@@ -10,23 +10,21 @@ class Player():
         self.alive_state = True
         self.map = map_obj
 
-    def move_player(self,direction,distance):
+    def move_player(self,map,direction,distance):
         if(direction == "x"):
             if(self.x + distance >= 0 and self.x + distance < self.map.width):
-                if not self.map.check_collision(self.y,self.x + distance):
-                    self.x += distance
+                self.y,self.x = map.update_player_pos(self.x, self.y,self.x + distance,self.y)
         else:
             if(self.y + distance >= 0 and self.y + distance < self.map.height):
-                if not self.map.check_collision(self.y + distance,self.x):
-                    self.y += distance
+                self.y,self.x = map.update_player_pos(self.x,self.y, self.x,self.y + distance)
         
-    def key_pressed(self,key):
+    def key_pressed(self,map,key):
         if key == pygame.K_a:
-            self.move_player("x",-50)
+            self.move_player(map,"x",-50)
         if key == pygame.K_d:
-            self.move_player("x",50)
+            self.move_player(map,"x",50)
         if key == pygame.K_w:
-            self.move_player("y",-50)
+            self.move_player(map,"y",-50)
         if key == pygame.K_s:
-            self.move_player("y",50)
+            self.move_player(map,"y",50)
     

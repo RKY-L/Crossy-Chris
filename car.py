@@ -6,13 +6,12 @@ class Car:
         self.x = 650
         self.y = road * 50
         self.frame_count = 0
-        direction = 0
+        self.direction = -1
     
     def update(self, map):
         self.frame_count += 1
-        if self.frame_count % 4 == 0  and self.direction == 0:
-            new_x = self.x - 50
-            self.x = map.updatecarpos(self.y, self.x,new_x)
+        if self.frame_count % 4 == 0  and self.direction == -1:
+            self.x = map.updatecarpos(self.x, self.y,self.direction)
             
 
 
