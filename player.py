@@ -7,7 +7,6 @@ class Player():
         self.width = 50
         self.height = 50
         self.grid_pos = []
-        self.alive_state = True
         self.map = map_obj
 
     def move_player(self,map,direction,distance):
