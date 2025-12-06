@@ -10,7 +10,7 @@ class Car:
     
     def update(self, map):
         self.frame_count += 1
-        if self.frame_count % 4 == 0  and self.direction == -1:
+        if self.frame_count % 4 == 0:
             self.x = map.updatecarpos(self.x, self.y,self.direction)
             
 

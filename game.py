@@ -20,9 +20,10 @@ clock = pygame.time.Clock()
 background = pygame.image.load("exp_bg.png")
 chicken = pygame.image.load("chicken.png")
 carpng = pygame.image.load("car.png")
-carimg = pygame.image.load("car.png")
+car_left_img = pygame.image.load("car.png")
+car_right_img = pygame.image.load("rev_car.png")
 world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
-carRows = {25:0, 23:1, 22:0, 19:0, 15:1, 13:0, 12:1, 11:1, 9:0, 8:1, 5:0, 1:1}
+carRows = {25:-1, 23:1, 22:-1, 19:-1, 15:1, 13:-1, 12:1, 11:1, 9:-1, 8:1, 5:-1, 1:1}
 cartimer = 0
 
 class Game:
@@ -37,12 +38,11 @@ class Game:
 
     def spawncars(self):
         for row in carRows:
-            coin = random.randint(0,3)
-            if coin == 1:
+            if random.randint(0,1) == 1:
                 car = Car(row)
                 self.cars.append(car)
                 car.direction = carRows[row]
-                if car.direction == 0:
+                if car.direction == -1:
                     car.x = 650
                 else:
                     car.x = -100
@@ -77,10 +77,13 @@ while running:
 
     new_cars = []
     for car in game.cars:
-        if car.x > -150:
+        if car.x > -150 or car.x > 650:
             new_cars.append(car)
         car.update(game.map)
-        screen.blit(carimg, (car.x, car.y - game.camera.y))
+        if car.direction == -1:
+            screen.blit(car_left_img, (car.x, car.y - game.camera.y))
+        else:
+            screen.blit(car_right_img, (car.x, car.y - game.camera.y))
     game.cars = new_cars
 
     screen.blit(pygame.font.SysFont(None, 100).render(str(game.score), True, (255, 255, 255)), (25, 25))

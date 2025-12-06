@@ -58,7 +58,6 @@ class Map:
 
         new_front = front_x + direction
         new_back = new_front - direction
-
         y_idx = y // self.tile_size
         if not self.check_collision(new_front * self.tile_size,y):
             if y_idx < len(self.grid):
