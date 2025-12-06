@@ -45,11 +45,17 @@ class Map:
         return None
     
     def updatecarpos(self,old_y, old_x,new_x):
-        old_col = old_x // self.tile_size
-        old_row = old_y // self.tile_size
-        new_col = new_x // self.tile_size
-        new_row = old_row
-        if old_col < 11:
-            print(old_col," ",old_row)
-            self.grid[old_row][old_col] = ""
-            self.grid[new_row][new_col] = "x"
+        if not self.check_collision(old_y,new_x):
+            old_x_idx = old_x // self.tile_size
+            old_y_idx = old_y // self.tile_size
+            new_x_idx = new_x // self.tile_size
+            if old_y_idx < len(self.grid) and old_x_idx < len(self.grid[0]):
+                #front of car
+                self.grid[old_y_idx][old_x_idx] = ""
+                self.grid[old_y_idx][new_x_idx] = "x"
+                #back of car
+                if old_x_idx + 1 < len(self.grid[0]):
+                    self.grid[old_y_idx][old_x_idx+1] = ""
+                    self.grid[old_y_idx][new_x_idx+1] = "x"
+            return new_x
+        return old_x
