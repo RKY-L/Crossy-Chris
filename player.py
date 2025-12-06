@@ -11,12 +11,16 @@ class Player():
         self.map = map_obj
 
     def move_player(self,map,direction,distance):
+        new_x = self.x
+        new_y = self.y
         if(direction == "x"):
             if(self.x + distance >= 0 and self.x + distance < self.map.width):
-                self.y,self.x = map.update_player_pos(self.x, self.y,self.x + distance,self.y)
+                new_x = self.x + distance
         else:
             if(self.y + distance >= 0 and self.y + distance < self.map.height):
-                self.y,self.x = map.update_player_pos(self.x,self.y, self.x,self.y + distance)
+                new_y = self.y + distance
+        
+        self.y,self.x = map.update_player_pos(self.x, self.y,new_x,new_y)
         
     def key_pressed(self,map,key):
         if key == pygame.K_a:
@@ -27,4 +31,5 @@ class Player():
             self.move_player(map,"y",-50)
         if key == pygame.K_s:
             self.move_player(map,"y",50)
+
     

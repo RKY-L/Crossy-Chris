@@ -1,13 +1,13 @@
 import pygame
-
 class Map:
-    def __init__(self,world_w,world_h,tile_size = 50):
-        self.tile_size = tile_size
+    def __init__(self,world_w,world_h,game):
+        self.tile_size = 50
         self.grid = []
         self.width = world_w
         self.height = world_h
         self.player_pos = [0,0]
         self.obstacles = []
+        self.game = game
     
     def initialize_map(self):
         map = []
@@ -33,8 +33,10 @@ class Map:
             if self.grid[tile_y][tile_x] == "T":
                 return "Tree"
             elif self.grid[tile_y][tile_x] == 'x':
+                self.game.refresh()
                 return "Car"
             elif self.grid[tile_y][tile_x] == "@":
+                self.game.refresh()
                 return "Player"
         return None
 
