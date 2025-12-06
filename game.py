@@ -30,7 +30,7 @@ player = Player(250,WORLD_H - 150,map)
 camera = Camera(CAMERA_W,CAMERA_H,WORLD_H)
 
 #obstacles
-carRows = [25, 23, 22, 19, 15, 13, 12, 11, 9, 8, 5, 2]
+carRows = {25:0, 23:1, 22:0, 19:0, 15:1, 13:0, 12:1, 11:1, 9:0, 8:1, 5:0, 2:1}
 cars = []
 cartimer = 0
 map.add_obstacle(24,2)
@@ -40,8 +40,12 @@ def spawncars():
         coin = random.randint(0,3)
         if coin == 1:
             car = Car(row)
-            car.direction = random.randint(0,1)
             cars.append(car)
+            car.direction = carRows[row]
+            if car.direction == 0:
+                car.x = 650
+            else:
+                car.x = -100
 
 running = True
 tile_size = 50

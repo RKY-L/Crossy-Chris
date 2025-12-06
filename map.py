@@ -48,7 +48,9 @@ class Map:
         old_row = old_y // self.tile_size
         new_col = new_x // self.tile_size
         new_row = old_row
-        if old_col < 11:
-            print(old_col," ",old_row)
+        
+        if 0 <= old_col < len(self.grid[0]) and 0 <= old_row < len(self.grid):
             self.grid[old_row][old_col] = ""
+    
+        if 0 <= new_col < len(self.grid[0]) and 0 <= new_row < len(self.grid):
             self.grid[new_row][new_col] = "x"
