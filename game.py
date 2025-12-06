@@ -2,7 +2,7 @@ import pygame
 import random
 
 from player import Player
-from maps import Map
+from map import Map
 from camera import Camera
 from car import Car
 SCREEN_W, SCREEN_H = 550, 900
