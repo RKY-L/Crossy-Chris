@@ -35,12 +35,13 @@ class Map:
     def check_collision(self, y, x):
         tile_x = x // 50
         tile_y = y // 50
-        if self.grid[tile_y][tile_x] == "T":
-            return "Tree"
-        elif self.grid[tile_y][tile_x] == 'x':
-            return "Car"
-        elif self.grid[tile_y][tile_x] == "@":
-            return "Player"
+        if tile_y < len(self.grid) and tile_x < len(self.grid[0]):
+            if self.grid[tile_y][tile_x] == "T":
+                return "Tree"
+            elif self.grid[tile_y][tile_x] == 'x':
+                return "Car"
+            elif self.grid[tile_y][tile_x] == "@":
+                return "Player"
         return None
     
     def updatecarpos(self,old_y, old_x,new_x):
