@@ -44,7 +44,7 @@ class Map:
         if not self.check_collision(new_x,new_y):
             new_x_idx = new_x // self.tile_size
             new_y_idx = new_y // self.tile_size
-            if new_y_idx < len(self.grid) and new_x_idx < len(self.grid[0]):
+            if self.within_map(new_x_idx,new_y_idx):
                 self.grid[self.player_pos[1]][self.player_pos[0]] = ""
                 self.player_pos[0] = new_x_idx
                 self.player_pos[1] = new_y_idx
@@ -73,3 +73,14 @@ class Map:
                     self.grid[y_idx][new_back] = "x"
             return new_front * self.tile_size
         return x
+
+    def within_map(self,x,y):
+        if y < len(self.grid) and x < len(self.grid[0]):
+            return True
+        return False
+
+    def player_row(self):
+        return self.player_pos[1]
+
+    def player_col(self):
+        return self.player_pos[0]
