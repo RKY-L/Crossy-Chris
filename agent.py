@@ -11,13 +11,14 @@ class Agent:
         #Making a new score = +10 reward
         #Touching finish line = +100 Reward
         self.reward = 0
-        self.gamma = 0
+        self.gamma = 0.9
         self.epsilon = 1
-        self.epsilon_decay = 0
+        self.epsilon_decay = 100
         self.actions = [pygame.K_w,pygame.K_a,pygame.K_s,pygame.K_d,0]
         self.enviroment = game
         self.memory = []
-        self.iterations = 0
+
+        self.num_games = 0
 
         self.model = None
         self.trainer = None
@@ -44,9 +45,12 @@ class Agent:
         states,actions,rewards,next_states,dones = zip(*sample)
         self.trainer.train_step(states,actions,rewards,next_states,dones)
 
-    def get_action(self):
+    def get_action(self,state):
+        if self.num_games % self.epsilon_decay:
+            self.epsilon -= 0.1
         if random.random() < self.epsilon:
             return random.choice(self.actions)
         else:
-            #pick best
-            pass
+            curr_state = torch.tensor(state,dtype=torch.float)
+            prediction = self.model.predict(curr_state)
+            return torch.argmax(prediction)
