@@ -26,6 +26,7 @@ class Crossy_roads:
         self.screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
         self.world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
         self.car_timer = 0
+        self.frames_passed = 0
         self.refresh()
         
     def refresh(self):
@@ -73,6 +74,9 @@ class Crossy_roads:
         self.screen.blit(pygame.font.SysFont(None, 50).render("Highscore: " + str(self.highscore), True, (255, 255, 255)), (10, 850))
         pygame.display.update()
         pygame.display.flip()
+        if(self.frames_passed > 210):
+            self.refresh()
+            self.frames_passed = 0
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
@@ -80,3 +84,6 @@ class Crossy_roads:
         if self.player.y < self.best_y:
             self.score += 1
             self.best_y = self.player.y
+    
+    def get_row(self):
+        return (self.player.y//50) - 1

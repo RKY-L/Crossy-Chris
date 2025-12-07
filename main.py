@@ -19,6 +19,7 @@ while running:
     game.play()
 
     #game.map.draw_grid(screen)
+    game.frames_passed += 1
     clock.tick(30)
 
 
