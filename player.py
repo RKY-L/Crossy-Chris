@@ -21,6 +21,18 @@ class Player():
         self.y,self.x = map.update_player_pos(self.x, self.y,new_x,new_y)
         
     def key_pressed(self,map,key):
+        if(isinstance(key,list)):
+            if key == [1,0,0,0,0]:
+                key = pygame.K_w
+            elif key == [0,1,0,0,0]:
+                key = pygame.K_a
+            elif key == [0,0,1,0,0]:
+                key = pygame.K_s
+            elif key == [0,0,0,1,0]:
+                key = pygame.K_d
+            elif key == [0,0,0,0,1]:
+                key = 0
+
         if key == pygame.K_a:
             self.move_player(map,"x",-50)
         if key == pygame.K_d:
