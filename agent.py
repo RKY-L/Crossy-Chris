@@ -2,7 +2,7 @@ import torch
 import pygame
 import random
 from crossy_roads import Crossy_roads
-
+import time
 
 BATCH_SIZE = 1000
 class Agent:
@@ -67,7 +67,7 @@ def train():
     running = True
     game = Crossy_roads()
     agent = Agent(game)
-
+    time.sleep(2)
     high_score = 0
     while running:
         #RL
