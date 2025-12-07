@@ -1,5 +1,6 @@
 import pygame
 from crossy_roads import Crossy_roads
+from agent import Agent
 game = Crossy_roads()
 pygame.init()
 pygame.display.set_caption("Crossy Chris")
@@ -9,14 +10,12 @@ clock = pygame.time.Clock()
 
 running = True
 tile_size = 50
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            game.key_pressed(event.key)
 
-    game.play()
+agent = Agent(game)
+
+while running:
+    if not game.play():
+        running = False
 
     #game.map.draw_grid(screen)
     game.frames_passed += 1

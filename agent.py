@@ -10,17 +10,19 @@ class Agent:
         #Making a new score = +10 reward
         #Touching finish line = +100 Reward
         self.reward = 0
-        self.gamme = 0
+        self.gamma = 0
         self.epsilon = 1
         self.epsilon_decay = 0
         self.actions = [pygame.K_w,pygame.K_a,pygame.K_s,pygame.K_d]
-        self.state = 25
         self.enviroment = game
         self.memory = []
         self.iterations = 0
     
     def get_state(self):
-        self.state = self.enviroment.get_row()
+        #[car ahead,car behind, car left, car right,row]
+        state = self.enviroment.car_nearme()
+        state.append(self.enviroment.get_row())
+        return state
     
     def store(self,state,action,reward):
         self.memory.append((state,action,reward))

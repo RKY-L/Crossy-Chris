@@ -6,7 +6,6 @@ class Player():
         self.y = spawn_y
         self.width = 50
         self.height = 50
-        self.grid_pos = []
         self.map = map_obj
 
     def move_player(self,map,direction,distance):
