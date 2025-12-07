@@ -92,9 +92,6 @@ class Crossy_roads:
             self.score += 1
             self.best_y = self.player.y
     
-    def get_row(self):
-        return (self.player.y//50) - 1
-
     def car_nearme(self):
         player_pos = self.map.player_pos
         car_near = [

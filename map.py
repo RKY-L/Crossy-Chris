@@ -78,3 +78,9 @@ class Map:
         if y < len(self.grid) and x < len(self.grid[0]):
             return True
         return False
+
+    def player_row(self):
+        return self.player_pos[1]
+
+    def player_col(self):
+        return self.player_pos[0]
