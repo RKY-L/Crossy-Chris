@@ -27,9 +27,11 @@ class Crossy_roads:
         self.world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
         self.car_timer = 0
         self.frames_passed = 0
+        self.died = False
         self.refresh()
         
     def refresh(self):
+        self.died = True
         if(self.highscore < self.score):
             self.highscore = self.score
         self.map = Map(SCREEN_W,WORLD_H,self).initialize_map()
@@ -37,6 +39,7 @@ class Crossy_roads:
         self.camera = Camera(CAMERA_W,CAMERA_H,WORLD_H,self)
         self.score = 0
         self.best_y = self.player.y
+        self.frames_passed = 0
 
     def spawncars(self):
         for row in carRows:
@@ -53,6 +56,7 @@ class Crossy_roads:
         self.refresh()
     
     def play(self,action = None):
+        new_score = False
         if not action:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -60,7 +64,10 @@ class Crossy_roads:
                 elif event.type == pygame.KEYDOWN:
                     self.key_pressed(event.key)
         else:
-            self.key_pressed(action)
+            if self.key_pressed(action) == 1:
+                new_score = True
+            elif self.key_pressed(action) == -1:
+                self.refresh()
 
         self.camera.update_camera(0,0,self.screen,self.world)
         self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
@@ -83,17 +90,31 @@ class Crossy_roads:
         self.screen.blit(pygame.font.SysFont(None, 50).render("Highscore: " + str(self.highscore), True, (255, 255, 255)), (10, 850))
         pygame.display.update()
         pygame.display.flip()
+
         if(self.frames_passed > 210):
+            print("stood too long")
             self.refresh()
             self.frames_passed = 0
-        return 100
+
+        if self.died:
+            self.died = False
+            return -100
+        self.died = False
+        if new_score:
+            return 100
+        else:
+            return -10
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
-        self.camera.update_camera(key,self.player.y,self.screen,self.world)
+        if not self.camera.update_camera(key,self.player.y,self.screen,self.world):
+            return -1
         if self.player.y < self.best_y:
             self.score += 1
             self.best_y = self.player.y
+            self.frames_passed = 0
+            return 1
+        return 0
     
     def car_nearme(self):
         player_pos = self.map.player_pos

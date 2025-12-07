@@ -14,7 +14,7 @@ class Camera:
         if key_pressed and (player_y - 50 - self.y) == -50:
             self.game.win()
         if key_pressed and (player_y - 50 - self.y) > 800:
-            self.game.refresh()
+            return False
         if key_pressed == pygame.K_s:
             if self.checkpoint == 0:
                     self.checkpoint = player_y - 50
@@ -23,3 +23,4 @@ class Camera:
             self.checkpoint = 0 
 
         screen.blit(world,(0,0),(0,self.y,self.width,self.height))
+        return True

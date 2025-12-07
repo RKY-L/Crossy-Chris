@@ -11,7 +11,6 @@ clock = pygame.time.Clock()
 running = True
 tile_size = 50
 
-agent = Agent(game)
 
 while running:
     if not game.play():

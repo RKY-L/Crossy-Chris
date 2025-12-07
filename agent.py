@@ -78,9 +78,8 @@ def train():
         done = 0
         if not reward:
             running = False
-        elif reward == 0:
+        elif reward == -100:
             done = 1
-            reward = -100
         
         new_state = agent.get_state()
         agent.train(state, action, reward, new_state, done)
@@ -97,4 +96,3 @@ def train():
         game.frames_passed += 1
         clock.tick(30)
 
-train()
