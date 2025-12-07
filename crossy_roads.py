@@ -28,10 +28,12 @@ class Crossy_roads:
         self.car_timer = 0
         self.frames_passed = 0
         self.died = False
+        self.won = False
         self.refresh()
         
     def refresh(self):
-        self.died = True
+        if not self.won:
+            self.died = True
         if(self.highscore < self.score):
             self.highscore = self.score
         self.map = Map(SCREEN_W,WORLD_H,self).initialize_map()
@@ -53,6 +55,7 @@ class Crossy_roads:
                     car.x = -100
 
     def win(self):
+        self.won = True
         self.refresh()
     
     def play(self,action = None):
@@ -96,14 +99,19 @@ class Crossy_roads:
             self.refresh()
             self.frames_passed = 0
 
+        print(self.died,self.won)
         if self.died:
             self.died = False
             return -100
         self.died = False
-        if new_score:
+
+        if self.won:
+            self.won = False
             return 100
+        if new_score:
+            return 10
         else:
-            return -10
+            return -1
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
