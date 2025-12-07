@@ -58,15 +58,15 @@ class Crossy_roads:
         self.won = True
         self.refresh()
     
+    
     def play(self,action = None):
         new_score = False
-        if not action:
-            for event in pygame.event.get():
+        for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return None
-                elif event.type == pygame.KEYDOWN:
+                elif not action and event.type == pygame.KEYDOWN:
                     self.key_pressed(event.key)
-        else:
+        if action:
             if self.key_pressed(action) == 1:
                 new_score = True
             elif self.key_pressed(action) == -1:

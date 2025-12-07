@@ -3,7 +3,8 @@ import pygame
 import random
 from crossy_roads import Crossy_roads
 import time
-
+from model import ANN, QTrainer
+from collections import deque
 BATCH_SIZE = 1000
 class Agent:
     def __init__(self,game):
@@ -18,12 +19,12 @@ class Agent:
         self.epsilon_decay = 100
         self.actions = [pygame.K_w,pygame.K_a,pygame.K_s,pygame.K_d,0]
         self.enviroment = game
-        self.memory = []
+        self.memory = deque(maxlen=100000)
 
         self.num_games = 0
 
-        self.model = None
-        self.trainer = None
+        self.model = ANN(6,256,5)
+        self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
     
     def get_state(self):
         #[car ahead,car behind, car left, car right,row,col]
@@ -48,15 +49,17 @@ class Agent:
         self.trainer.train_step(states,actions,rewards,new_states,dones)
 
     def get_action(self,state):
+        action = [0,0,0,0,0]
         if self.num_games % self.epsilon_decay:
             self.epsilon -= 0.1
         if random.random() < self.epsilon:
-            return random.choice(self.actions)
+            action[random.randint(0,len(self.actions))-1] = 1
+            return action
         else:
             curr_state = torch.tensor(state,dtype=torch.float)
-            prediction = self.model.predict(curr_state)
-            return torch.argmax(prediction)
-
+            prediction = self.model(curr_state)
+            action[torch.argmax(prediction).item()] = 1
+            return action
 
 def train():
     pygame.init()
@@ -96,3 +99,5 @@ def train():
         game.frames_passed += 1
         clock.tick(30)
 
+if __name__ == '__main__':
+    train()
