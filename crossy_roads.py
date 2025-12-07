@@ -52,12 +52,15 @@ class Crossy_roads:
     def win(self):
         self.refresh()
     
-    def play(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            elif event.type == pygame.KEYDOWN:
-                self.key_pressed(event.key)
+    def play(self,action = None):
+        if not action:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return None
+                elif event.type == pygame.KEYDOWN:
+                    self.key_pressed(event.key)
+        else:
+            self.key_pressed(action)
 
         self.camera.update_camera(0,0,self.screen,self.world)
         self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
@@ -83,7 +86,7 @@ class Crossy_roads:
         if(self.frames_passed > 210):
             self.refresh()
             self.frames_passed = 0
-        return True
+        return 100
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
@@ -95,9 +98,9 @@ class Crossy_roads:
     def car_nearme(self):
         player_pos = self.map.player_pos
         car_near = [
-            True if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[self.player.y-1][self.player.x] else False,
-            True if self.map.within_map(player_pos[0],player_pos[1]+1) and self.map.grid[self.player.y+1][self.player.x] else False,
-            True if self.map.within_map(player_pos[0]-1,player_pos[1]) and self.map.grid[self.player.y][self.player.x-1] else False,
-            True if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[self.player.y][self.player.x+1] else False,
+            True if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else False,
+            True if self.map.within_map(player_pos[0],player_pos[1]+1) and self.map.grid[player_pos[1]+1][player_pos[0]] else False,
+            True if self.map.within_map(player_pos[0]-1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]-1] else False,
+            True if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else False,
                     ] #[car ahead,car behind, car left, car right]
         return car_near

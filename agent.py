@@ -1,6 +1,8 @@
 import torch
 import pygame
 import random
+from crossy_roads import Crossy_roads
+
 
 BATCH_SIZE = 1000
 class Agent:
@@ -30,11 +32,11 @@ class Agent:
         state.append(self.enviroment.map.player_col())
         return state
     
-    def memorize(self,state,action,reward,next_state,done):
-        self.memory.append((state,action,reward,next_state,done))
+    def memorize(self,state,action,reward,new_state,done):
+        self.memory.append((state,action,reward,new_state,done))
 
-    def train(self,state,action,reward,next_state,done):
-        self.trainer.train_step(state,action,reward,next_state,done)
+    def train(self,state,action,reward,new_state,done):
+        self.trainer.train_step(state,action,reward,new_state,done)
     
     def batch_train(self):
         if(len(self.memory) > BATCH_SIZE):
@@ -42,8 +44,8 @@ class Agent:
         else:
             sample = self.memory
         
-        states,actions,rewards,next_states,dones = zip(*sample)
-        self.trainer.train_step(states,actions,rewards,next_states,dones)
+        states,actions,rewards,new_states,dones = zip(*sample)
+        self.trainer.train_step(states,actions,rewards,new_states,dones)
 
     def get_action(self,state):
         if self.num_games % self.epsilon_decay:
@@ -54,3 +56,45 @@ class Agent:
             curr_state = torch.tensor(state,dtype=torch.float)
             prediction = self.model.predict(curr_state)
             return torch.argmax(prediction)
+
+
+def train():
+    pygame.init()
+    pygame.display.set_caption("Crossy Chris")
+    normal_logo = pygame.image.load("./normal_logo.png")
+    pygame.display.set_icon(normal_logo)
+    clock = pygame.time.Clock()
+    running = True
+    game = Crossy_roads()
+    agent = Agent(game)
+
+    high_score = 0
+    while running:
+        #RL
+        state = agent.get_state()
+        action = agent.get_action(state)
+
+        reward = game.play(action)
+        done = 0
+        if not reward:
+            running = False
+        elif reward == 0:
+            done = 1
+            reward = -100
+        
+        new_state = agent.get_state()
+        agent.train(state, action, reward, new_state, done)
+
+        agent.memorize(state,action,reward,new_state,done)
+        
+        if done:
+            if high_score < game.highscore:
+                agent.model.save()
+                high_score = game.highscore
+            agent.num_games += 1
+            agent.batch_train()
+
+        game.frames_passed += 1
+        clock.tick(30)
+
+train()
