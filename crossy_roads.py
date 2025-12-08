@@ -27,13 +27,11 @@ class Crossy_roads:
         self.world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
         self.car_timer = 0
         self.frames_passed = 0
-        self.died = False
-        self.won = False
+        self.rewards = 0
+        self.player_died = False
         self.refresh()
         
     def refresh(self):
-        if not self.won:
-            self.died = True
         if(self.highscore < self.score):
             self.highscore = self.score
         self.map = Map(SCREEN_W,WORLD_H,self).initialize_map()
@@ -42,6 +40,11 @@ class Crossy_roads:
         self.score = 0
         self.best_y = self.player.y
         self.frames_passed = 0
+
+        self.rewards = 0
+        self.player_died = False
+        self.won = False
+        
 
     def spawncars(self):
         for row in carRows:
@@ -53,24 +56,18 @@ class Crossy_roads:
                     car.x = 650
                 else:
                     car.x = -100
-
-    def win(self):
-        self.won = True
-        self.refresh()
     
     
     def play(self,action = None):
         new_score = False
         for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return None
-                elif not action and event.type == pygame.KEYDOWN:
-                    self.key_pressed(event.key)
+            if event.type == pygame.QUIT:
+                return None
+            elif not action and event.type == pygame.KEYDOWN:
+                action = event.key
         if action:
-            if self.key_pressed(action) == 1:
+            if self.key_pressed(action) == "New Score":
                 new_score = True
-            elif self.key_pressed(action) == -1:
-                self.refresh()
 
         self.camera.update_camera(0,0,self.screen,self.world)
         self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
@@ -94,35 +91,40 @@ class Crossy_roads:
         pygame.display.update()
         pygame.display.flip()
 
-        if(self.frames_passed > 210):
-            print("stood too long")
-            self.refresh()
-            self.frames_passed = 0
 
-        print(self.died,self.won)
-        if self.died:
-            self.died = False
-            return -100
-        self.died = False
+        #Rewards and Death
+        if(self.frames_passed > 210): #Death for standing still too long
+            self.player_died = True
+
+        if new_score:
+            self.rewards += 10
+        else:
+            self.rewards -= 0.1
+
+        #Death Or Win
+        cc_reward = self.rewards
+        done = 0
+        if self.player_died:
+            cc_reward -= 100
+            done = 1
+            self.refresh()
 
         if self.won:
-            self.won = False
-            return 100
-        if new_score:
-            return 10
-        else:
-            return -1
+            cc_reward += 100
+            done = 1
+            self.refresh()
+        
+        return cc_reward,done
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
-        if not self.camera.update_camera(key,self.player.y,self.screen,self.world):
-            return -1
+        self.camera.update_camera(key,self.player.y,self.screen,self.world)
         if self.player.y < self.best_y:
             self.score += 1
             self.best_y = self.player.y
             self.frames_passed = 0
-            return 1
-        return 0
+            return "New Score"
+        return "No New Score"
     
     def car_nearme(self):
         player_pos = self.map.player_pos
