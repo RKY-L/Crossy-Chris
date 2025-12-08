@@ -6,7 +6,7 @@ import time
 from model import ANN, QTrainer
 from collections import deque
 from helper import plot
-BATCH_SIZE = 1000
+BATCH_SIZE = 100
 class Agent:
     def __init__(self,game):
         #Running into a car = -100 reward
@@ -27,10 +27,10 @@ class Agent:
         self.model = ANN(10,256,5)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
 
-        self.speed = 2
+        self.speed = 5
     
     def get_state(self):
-        #[car ahead(3),car behind, car left, car right,row,col,row_car_direction,row_car_speed]
+        #[car ahead left, car ahead middle, car ahead right,car behind, car left, car right,row,col,row_car_direction,row_car_speed]
         state = self.enviroment.car_nearme()
         state.append(self.enviroment.map.player_row())
         state.append(self.enviroment.map.player_col())
@@ -55,7 +55,7 @@ class Agent:
         self.trainer.train_step(states,actions,rewards,new_states,dones)
 
     def get_action(self,state):
-        if self.num_games % 2 == 0 and self.num_games > 0:
+        if self.num_games % 10 == 0 and self.num_games > 0:
             self.epsilon= max(self.min_epsilon, self.epsilon_decay * self.epsilon)
         if random.random() < self.epsilon:
             action = random.randint(0,len(self.actions)-1)
@@ -124,10 +124,10 @@ def train():
 
 if __name__ == '__main__':
     train()
-    '''model = ANN(8,256,5)
+    '''model = ANN(10,256,5)
     model.load_state_dict(torch.load("./model/model.pth", map_location="cpu"))
     model.eval()
-    state = [1, 1, 1, 0, 0, 0, 26, 5]
+    state = [1 ,1, 1, 0, 0, 0, 26, 5,-1,25]
     state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
     with torch.no_grad():
         q_values = model(state_tensor)

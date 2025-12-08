@@ -7,6 +7,7 @@ class Car:
         self.y = road * 50
         self.frame_count = 0
         self.direction = -1
+        self.car_img = None
     
     def update(self, map):
         self.frame_count += 1

@@ -9,7 +9,6 @@ clock = pygame.time.Clock()
 
 running = True
 tile_size = 50
-initcars()
 while running:
     if game.play() == None:
         print("telling game to quit")
