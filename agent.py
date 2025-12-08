@@ -14,7 +14,7 @@ class Agent:
         #Making a new score = +10 reward
         #Touching finish line = +100 Reward
         self.reward = 0
-        self.gamma = 0.9
+        self.gamma = 0.8
         self.epsilon = 1
         self.epsilon_decay = 100
         self.actions = [pygame.K_w,pygame.K_a,pygame.K_s,pygame.K_d,0]

@@ -91,15 +91,14 @@ class Crossy_roads:
         pygame.display.update()
         pygame.display.flip()
 
+
+        #Rewards and Death
         if(self.frames_passed > 210): #Death for standing still too long
             self.player_died = True
 
-        #Rewards and Death
-        self.rewards -= 1 #being alive/standing still
-        if action == 0:
-            self.rewards -=1
+        self.rewards -= 0.1 #being alive/standing still
         if new_score:
-            self.rewards += 50
+            self.rewards += 10
 
         #Death Or Win
         cc_reward = self.rewards
@@ -110,7 +109,7 @@ class Crossy_roads:
             self.refresh()
 
         if self.won:
-            cc_reward += 200
+            cc_reward += 100
             done = 1
             self.refresh()
         
