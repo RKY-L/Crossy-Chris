@@ -27,7 +27,6 @@ class Crossy_roads:
         self.world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
         self.car_timer = 0
         self.frames_passed = 0
-        self.rewards = 0
         self.player_died = False
         self.refresh()
         
@@ -41,7 +40,6 @@ class Crossy_roads:
         self.best_y = self.player.y
         self.frames_passed = 0
 
-        self.rewards = 0
         self.player_died = False
         self.won = False
         
@@ -59,7 +57,10 @@ class Crossy_roads:
     
     
     def play(self,action = None):
+        rewards = 0
         new_score = False
+        cars_infront = self.car_nearme()[:3]
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return None
@@ -73,7 +74,7 @@ class Crossy_roads:
         self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
 
         #Moving Cars in game
-        if self.car_timer % 30 == 0:
+        if self.car_timer % 15 == 0:
             self.spawncars()
         self.car_timer += 1
 
@@ -95,26 +96,25 @@ class Crossy_roads:
         #Rewards and Death
         if(self.frames_passed > 210): #Death for standing still too long
             self.player_died = True
-
+        
         if new_score:
-            self.rewards += 10
+            rewards += 10
         else:
-            self.rewards -= 0.1
+            rewards -= 0.1
 
         #Death Or Win
-        cc_reward = self.rewards
         done = 0
         if self.player_died:
-            cc_reward -= 100
+            rewards -= 50
             done = 1
             self.refresh()
 
         if self.won:
-            cc_reward += 100
+            rewards += 100
             done = 1
             self.refresh()
         
-        return cc_reward,done
+        return rewards,done
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
@@ -129,9 +129,11 @@ class Crossy_roads:
     def car_nearme(self):
         player_pos = self.map.player_pos
         car_near = [
-            True if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else False,
-            True if self.map.within_map(player_pos[0],player_pos[1]+1) and self.map.grid[player_pos[1]+1][player_pos[0]] else False,
-            True if self.map.within_map(player_pos[0]-1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]-1] else False,
-            True if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else False,
+            1 if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else 0, #infront middle
+            1 if self.map.within_map(player_pos[0]-1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]-1] else 0, #infront left
+            1 if self.map.within_map(player_pos[0]+1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]+1] else 0, #infront right
+            1 if self.map.within_map(player_pos[0],player_pos[1]+1) and self.map.grid[player_pos[1]+1][player_pos[0]] else 0,
+            1 if self.map.within_map(player_pos[0]-1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]-1] else 0,
+            1 if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else 0,
                     ] #[car ahead,car behind, car left, car right]
         return car_near

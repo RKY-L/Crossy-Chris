@@ -13,8 +13,7 @@ class Agent:
         #Standing still for 210 frames = -100 reward
         #Making a new score = +10 reward
         #Touching finish line = +100 Reward
-        self.reward = 0
-        self.gamma = 0.8
+        self.gamma = 0.9
         self.epsilon = 1
         self.epsilon_decay = 0.995
         self.actions = [pygame.K_w,pygame.K_a,pygame.K_s,pygame.K_d,0]
@@ -23,7 +22,7 @@ class Agent:
 
         self.num_games = 0
 
-        self.model = ANN(6,256,5)
+        self.model = ANN(8,256,5)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
     
     def get_state(self):
@@ -52,11 +51,11 @@ class Agent:
         if self.num_games % 2 == 0 and self.num_games > 0:
             self.epsilon *= self.epsilon_decay
         if random.random() < self.epsilon:
-            return self.actions[random.randint(0,len(self.actions)-1)]
+            return random.randint(0,len(self.actions)-1)
         else:
             curr_state = torch.tensor(state,dtype=torch.float)
             prediction = self.model.forward(curr_state)
-            return self.actions[torch.argmax(prediction).item()]
+            return torch.argmax(prediction).item()
 
 def train():
     pygame.init()
@@ -67,15 +66,14 @@ def train():
     running = True
     game = Crossy_roads()
     agent = Agent(game)
-    time.sleep(2)
     high_score = 0
+    time.sleep(2)
     while running:
         #RL
         state = agent.get_state()
-        action = agent.get_action(state)
+        action = agent.actions[agent.get_action(state)]
 
         reward,done = game.play(action)
-        print(reward)
         if reward is None:
             running = False
         
