@@ -96,9 +96,10 @@ class Crossy_roads:
         if(self.frames_passed > 210): #Death for standing still too long
             self.player_died = True
 
-        self.rewards -= 0.1 #being alive/standing still
         if new_score:
             self.rewards += 10
+        else:
+            self.rewards -= 0.1
 
         #Death Or Win
         cc_reward = self.rewards

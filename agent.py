@@ -16,7 +16,7 @@ class Agent:
         self.reward = 0
         self.gamma = 0.8
         self.epsilon = 1
-        self.epsilon_decay = 100
+        self.epsilon_decay = 0.995
         self.actions = [pygame.K_w,pygame.K_a,pygame.K_s,pygame.K_d,0]
         self.enviroment = game
         self.memory = deque(maxlen=100000)
@@ -49,10 +49,10 @@ class Agent:
         self.trainer.train_step(states,actions,rewards,new_states,dones)
 
     def get_action(self,state):
-        if self.num_games % self.epsilon_decay:
-            self.epsilon -= 0.1
+        if self.num_games % 2 == 0 and self.num_games > 0:
+            self.epsilon *= self.epsilon_decay
         if random.random() < self.epsilon:
-            return self.actions[random.randint(0,len(self.actions))-1]
+            return self.actions[random.randint(0,len(self.actions)-1)]
         else:
             curr_state = torch.tensor(state,dtype=torch.float)
             prediction = self.model.forward(curr_state)
