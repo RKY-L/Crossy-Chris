@@ -1,6 +1,5 @@
 import pygame
 from crossy_roads import Crossy_roads
-from agent import Agent
 game = Crossy_roads()
 pygame.init()
 pygame.display.set_caption("Crossy Chris")
@@ -13,7 +12,8 @@ tile_size = 50
 
 
 while running:
-    if not game.play():
+    if game.play() == None:
+        print("telling game to quit")
         running = False
 
     #game.map.draw_grid(screen)

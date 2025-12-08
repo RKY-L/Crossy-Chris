@@ -11,21 +11,10 @@ class Camera:
 
     
     def update_camera(self,key,player_y,screen,world):
-        if(isinstance(key,list)):
-            if key == [1,0,0,0,0]:
-                key = pygame.K_w
-            elif key == [0,1,0,0,0]:
-                key = pygame.K_a
-            elif key == [0,0,1,0,0]:
-                key = pygame.K_s
-            elif key == [0,0,0,1,0]:
-                key = pygame.K_d
-            elif key == [0,0,0,0,1]:
-                key = 0
         if key and (player_y - 50 - self.y) == -50:
-            self.game.win()
+            self.game.won = True
         if key and (player_y - 50 - self.y) > 800:
-            return False
+            self.game.player_died = True
         if key == pygame.K_s:
             if self.checkpoint == 0:
                     self.checkpoint = player_y - 50
@@ -34,4 +23,3 @@ class Camera:
             self.checkpoint = 0 
 
         screen.blit(world,(0,0),(0,self.y,self.width,self.height))
-        return True

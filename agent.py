@@ -49,17 +49,14 @@ class Agent:
         self.trainer.train_step(states,actions,rewards,new_states,dones)
 
     def get_action(self,state):
-        action = [0,0,0,0,0]
         if self.num_games % self.epsilon_decay:
             self.epsilon -= 0.1
         if random.random() < self.epsilon:
-            action[random.randint(0,len(self.actions))-1] = 1
-            return action
+            return self.actions[random.randint(0,len(self.actions))-1]
         else:
             curr_state = torch.tensor(state,dtype=torch.float)
-            prediction = self.model(curr_state)
-            action[torch.argmax(prediction).item()] = 1
-            return action
+            prediction = self.model.forward(curr_state)
+            return self.actions[torch.argmax(prediction).item()]
 
 def train():
     pygame.init()
@@ -77,12 +74,10 @@ def train():
         state = agent.get_state()
         action = agent.get_action(state)
 
-        reward = game.play(action)
-        done = 0
-        if not reward:
+        reward,done = game.play(action)
+        print(reward)
+        if reward is None:
             running = False
-        elif reward == -100:
-            done = 1
         
         new_state = agent.get_state()
         agent.train(state, action, reward, new_state, done)

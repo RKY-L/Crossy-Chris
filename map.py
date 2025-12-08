@@ -33,15 +33,14 @@ class Map:
             if self.grid[tile_y][tile_x] == "T":
                 return "Tree"
             elif self.grid[tile_y][tile_x] == 'x':
-                self.game.refresh()
                 return "Car"
             elif self.grid[tile_y][tile_x] == "@":
-                self.game.refresh()
                 return "Player"
         return None
 
     def update_player_pos(self,x,y,new_x,new_y):
-        if not self.check_collision(new_x,new_y):
+        collision = self.check_collision(new_x,new_y)
+        if not collision:
             new_x_idx = new_x // self.tile_size
             new_y_idx = new_y // self.tile_size
             if self.within_map(new_x_idx,new_y_idx):
@@ -50,6 +49,8 @@ class Map:
                 self.player_pos[1] = new_y_idx
                 self.grid[self.player_pos[1]][self.player_pos[0]] = "@"
                 return new_y,new_x
+        elif collision == "Car":
+            self.game.player_died = True
         return y,x
     
     def updatecarpos(self,x, y,direction):
@@ -59,20 +60,21 @@ class Map:
         new_front = front_x + direction
         new_back = new_front - direction
         y_idx = y // self.tile_size
-        if not self.check_collision(new_front * self.tile_size,y):
-            if y_idx < len(self.grid):
-                #front of car
-                if 0 <= front_x < len(self.grid[0]):
-                    self.grid[y_idx][front_x] = ""
-                if 0 <= new_front < len(self.grid[0]):
-                    self.grid[y_idx][new_front] = "x"
-                #back of car
-                if 0 <= back_x < len(self.grid[0]):
-                    self.grid[y_idx][back_x] = ""
-                if 0 <= new_back < len(self.grid[0]):
-                    self.grid[y_idx][new_back] = "x"
+        collision = self.check_collision(new_front * self.tile_size,y)
+        if collision == "Player":
+            self.game.player_died = True
+        if y_idx < len(self.grid):
+            #front of car
+            if 0 <= front_x < len(self.grid[0]):
+                self.grid[y_idx][front_x] = ""
+            if 0 <= new_front < len(self.grid[0]):
+                self.grid[y_idx][new_front] = "x"
+            #back of car
+            if 0 <= back_x < len(self.grid[0]):
+                self.grid[y_idx][back_x] = ""
+            if 0 <= new_back < len(self.grid[0]):
+                self.grid[y_idx][new_back] = "x"
             return new_front * self.tile_size
-        return x
 
     def within_map(self,x,y):
         if y < len(self.grid) and x < len(self.grid[0]):
