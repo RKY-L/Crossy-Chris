@@ -1,10 +1,11 @@
 import torch
 import pygame
 import random
-from crossy_roads import Crossy_roads
+from crossy_roads import *
 import time
 from model import ANN, QTrainer
 from collections import deque
+
 BATCH_SIZE = 1000
 class Agent:
     def __init__(self,game):
@@ -65,6 +66,7 @@ def train():
     pygame.display.set_icon(normal_logo)
     clock = pygame.time.Clock()
     running = True
+    initcars()
     game = Crossy_roads()
     agent = Agent(game)
     time.sleep(2)
