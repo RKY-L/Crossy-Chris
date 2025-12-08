@@ -5,7 +5,7 @@ class Map:
         self.grid = []
         self.width = world_w
         self.height = world_h
-        self.player_pos = [0,0]
+        self.player_pos = [5,26]
         self.obstacles = []
         self.game = game
     
