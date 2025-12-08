@@ -15,7 +15,7 @@ chicken = pygame.image.load("chicken.png")
 carpng = pygame.image.load("car.png")
 car_left_img = pygame.image.load("car.png")
 car_right_img = pygame.image.load("rev_car.png")
-carRows = {25:-1, 23:1, 22:-1, 19:-1, 15:1, 13:-1, 12:1, 11:1, 9:-1, 8:1, 5:-1, 1:1}
+carRows = {25:(-1,0), 23:(1,0), 22:(-1,0), 19:(-1,0), 15:(1,0), 13:(-1,0), 12:(1,0), 11:(1,0), 9:(-1,0), 8:(1,0), 5:(-1,0), 1:(1,0)}
 cartimer = 0
 
 class Crossy_roads:
@@ -46,17 +46,18 @@ class Crossy_roads:
         self.won = False
         
 
+
     def spawncars(self):
         for row in carRows:
-            if random.randint(0,1) == 1:
+            if self.car_timer % carRows[row][1] == 0:
                 car = Car(row)
                 self.cars.append(car)
-                car.direction = carRows[row]
-                if car.direction == -1:
-                    car.x = 650
-                else:
+                car.direction = carRows[row][0]
+                if car.direction == 1:
                     car.x = -100
-    
+                else:
+                    car.x = 650
+
     
     def play(self,action = None):
         new_score = False
@@ -73,8 +74,8 @@ class Crossy_roads:
         self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
 
         #Moving Cars in game
-        if self.car_timer % 30 == 0:
-            self.spawncars()
+
+        self.spawncars()
         self.car_timer += 1
 
         new_cars = []
@@ -135,3 +136,9 @@ class Crossy_roads:
             True if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else False,
                     ] #[car ahead,car behind, car left, car right]
         return car_near
+    
+def initcars():
+    offsetTiming = [20, 30, 50]
+    for row in carRows:
+        offset = random.randint(0,2)
+        carRows[row] = (carRows[row][0], offsetTiming[offset])

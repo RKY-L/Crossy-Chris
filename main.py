@@ -1,5 +1,5 @@
 import pygame
-from crossy_roads import Crossy_roads
+from crossy_roads import *
 game = Crossy_roads()
 pygame.init()
 pygame.display.set_caption("Crossy Chris")
@@ -9,8 +9,7 @@ clock = pygame.time.Clock()
 
 running = True
 tile_size = 50
-
-
+initcars()
 while running:
     if game.play() == None:
         print("telling game to quit")
