@@ -171,7 +171,12 @@ class Crossy_roads:
                     reward -= 1000
                 else:
                     reward += 10
-            
+
+        #Negative reward for edge of map
+        col = self.map.player_pos[0]
+        if col < 2 or col > 8:
+            reward -= 50
+
         if advanced_foward:
             reward += self.map.player_pos[1] * 5
         #Death Or Win
