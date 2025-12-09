@@ -49,16 +49,15 @@ class QTrainer:
 
         pred = self.model(state)
 
-        target = pred.clone()
+        target = pred.clone().detach()
         for idx in range(len(done)):
             Q_new = reward[idx]
             if not done[idx]:
-                #Update Q table from slides. 
                 Q_new = reward[idx] + self.gamma * torch.max(self.model(new_state[idx]))
-            target[idx][torch.argmax(action[idx]).item()] = Q_new
+            target[idx][action[idx]] = Q_new
         
 
         self.optimizer.zero_grad()
-        loss = self.lossfunct(target, pred)
+        loss = self.lossfunct(pred, target)
         loss.backward()
         self.optimizer.step()

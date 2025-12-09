@@ -13,7 +13,6 @@ while running:
     reward, done = None, None
     reward,done = game.play()
     if reward == None:
-        print("telling game to quit")
         running = False
     
 

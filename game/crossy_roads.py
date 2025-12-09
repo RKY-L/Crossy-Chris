@@ -126,13 +126,13 @@ class Crossy_roads:
         row = self.map.player_pos[1]
         type = 0
         direction = 0
-        speed = 0
+        gap = 0
         for car_row in carRows.keys():
             if row == car_row:
                 type = 1
                 direction = carRows[car_row][0]
-                speed = carRows[car_row][1]
-        return type,direction,speed
+                gap = carRows[car_row][1]
+        return type,direction
     
     def reward_function(self,action,advanced_foward):
         reward = 0
@@ -140,7 +140,7 @@ class Crossy_roads:
 
         #Death Or Win Or Alive
         if self.player_died:
-            reward -= 200
+            reward -= 100
             done = 1
             self.refresh()
 
@@ -159,7 +159,10 @@ class Crossy_roads:
             elif action != pygame.K_w: #Left or Right
                 reward -= 0.2
             else:
-                reward += 0.5
+                reward += 10
+            
+            if self.map.player_pos[0] == 0 or self.map.player_pos[0] == 10:
+                reward -= 2
         
         return reward,done
     
