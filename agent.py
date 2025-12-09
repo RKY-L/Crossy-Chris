@@ -18,23 +18,24 @@ class Agent:
         self.epsilon = 1.0
         self.epsilon_decay = 0.995
         self.min_epsilon = 0.01
-        self.actions = [pygame.K_w,pygame.K_a,pygame.K_s,pygame.K_d,0]
+        self.actions = [pygame.K_w,pygame.K_a,pygame.K_d,0]
         self.enviroment = game
         self.memory = deque(maxlen=100000)
 
         self.num_games = 0
 
-        self.model = ANN(10,256,5)
+        self.model = ANN(10,256,4)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
 
         self.speed = 5
     
     def get_state(self):
-        #[car ahead left, car ahead middle, car ahead right,car behind, car left, car right,row,col,row_car_direction,row_car_speed]
+        #[TL,TM,TR,L,R,player_row,player_col,row_type,direction,car_speed]
         state = self.enviroment.car_nearme()
         state.append(self.enviroment.map.player_row())
         state.append(self.enviroment.map.player_col())
-        row_dir,row_speed = self.enviroment.get_row_info()
+        row_type,row_dir,row_speed = self.enviroment.get_row_info()
+        state.append(row_type)
         state.append(row_dir)
         state.append(row_speed)
         return state

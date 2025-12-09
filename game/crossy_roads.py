@@ -115,23 +115,24 @@ class Crossy_roads:
     def car_nearme(self):
         player_pos = self.map.player_pos
         car_near = [
-            1 if self.map.within_map(player_pos[0]-1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]-1] else 0, #infront left
-            1 if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else 0, #infront middle
-            1 if self.map.within_map(player_pos[0]+1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]+1] else 0, #infront right
-            1 if self.map.within_map(player_pos[0],player_pos[1]+1) and self.map.grid[player_pos[1]+1][player_pos[0]] else 0,
-            1 if self.map.within_map(player_pos[0]-1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]-1] else 0,
-            1 if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else 0,
-                    ] #[car ahead,car behind, car left, car right]
+            1 if self.map.within_map(player_pos[0]-1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]-1] else 0, #TL
+            1 if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else 0, #TM
+            1 if self.map.within_map(player_pos[0]+1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]+1] else 0, #TR
+            1 if self.map.within_map(player_pos[0]-1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]-1] else 0, #Left
+            1 if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else 0, #Right
+                    ] 
         return car_near
     def get_row_info(self):
         row = self.map.player_pos[1]
+        type = 0
         direction = 0
         speed = 0
         for car_row in carRows.keys():
             if row == car_row:
+                type = 1
                 direction = carRows[car_row][0]
                 speed = carRows[car_row][1]
-        return direction,speed
+        return type,direction,speed
     
     def reward_function(self,action,prev_pos,advanced_foward,cars_infront):
         reward = 0
