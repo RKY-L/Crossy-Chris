@@ -10,7 +10,6 @@ clock = pygame.time.Clock()
 
 running = True
 tile_size = 50
-initcars()
 train()
 
 

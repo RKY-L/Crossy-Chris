@@ -19,7 +19,7 @@ evilchickentoggle = pygame.transform.scale(pygame.image.load("evil_logo.png"),(7
 carpng = pygame.image.load("car.png")
 car_left_img = pygame.image.load("car.png")
 car_right_img = pygame.image.load("rev_car.png")
-carRows = {25:(-1,0), 23:(1,0), 22:(-1,0), 19:(-1,0), 15:(1,0), 13:(-1,0), 12:(1,0), 11:(1,0), 9:(-1,0), 8:(1,0), 5:(-1,0), 1:(1,0)}
+carRows = {25:(-1,25), 23:(1,30), 22:(-1,50), 19:(-1,30), 15:(1,30), 13:(-1,25), 12:(1,50), 11:(1,30), 9:(-1,25), 8:(1,50), 5:(-1,25), 1:(1,30)}
 cartimer = 0
 
 class Crossy_roads:
@@ -27,6 +27,7 @@ class Crossy_roads:
         self.score = 0
         self.cars = []
         self.highscore = highscore
+        self.prev_score = 0
         self.screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
         self.world = pygame.transform.scale(background, (SCREEN_W, WORLD_H))
         self.car_timer = 0
@@ -39,6 +40,7 @@ class Crossy_roads:
     def refresh(self):
         if(self.highscore < self.score):
             self.highscore = self.score
+        self.prev_score = self.score
         self.map = Map(SCREEN_W,WORLD_H,self).initialize_map()
         self.player = Player(250,WORLD_H - 150,self.map)
         self.camera = Camera(CAMERA_W,CAMERA_H,WORLD_H,self)
@@ -57,12 +59,15 @@ class Crossy_roads:
                 car = Car(row)
                 self.cars.append(car)
                 car.direction = carRows[row][0]
+                car.car_img = car_left_img if car.direction == -1 else car_right_img
                 if car.direction == 1:
                     car.x = -100
                 else:
                     car.x = 650
 
     def play(self, aitoggle,action = None):
+        advanced_foward = False
+        prev_pos = self.map.player_pos
         rewards = 0
         new_score = False
         cars_infront = self.car_nearme()[:3]
@@ -88,10 +93,9 @@ class Crossy_roads:
             if self.key_pressed(action) == "New Score":
                 new_score = True
         self.camera.update_camera(0,0,self.screen,self.world)
-        self.screen.blit(self.chickenDisplayed, (self.player.x, self.player.y - self.camera.y))
+        self.screen.blit(self.chickenDisplayed, (self.player.x, self.player.y - self.camera.y)), aitoggle
 
         #Moving Cars in game
-
         self.spawncars()
         self.car_timer += 1
 
@@ -100,10 +104,23 @@ class Crossy_roads:
             if car.x > -150 or car.x > 650:
                 new_cars.append(car)
             car.update(self.map)
-            car_img = car_left_img if car.direction == -1 else car_right_img
-            self.screen.blit(car_img, (car.x, car.y - self.camera.y))
         self.cars = new_cars
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return None
+            elif not action and event.type == pygame.KEYDOWN:
+                action = event.key
+        if action:
+            if self.key_pressed(action) == "New Score":
+                advanced_foward = True
+
+        self.camera.update_camera(0,0,self.screen,self.world)
+        self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
+
+
+        for car in self.cars:
+            self.screen.blit(car.car_img, (car.x, car.y - self.camera.y))
         self.screen.blit(pygame.font.SysFont(None, 100).render(str(self.score), True, (255, 255, 255)), (25, 25))
         self.screen.blit(pygame.font.SysFont(None, 50).render("Highscore: " + str(self.highscore), True, (255, 255, 255)), (10, 850))
         # Draw UI elements last so they're not covered by the world render
@@ -115,27 +132,9 @@ class Crossy_roads:
         pygame.display.flip()
 
 
-        #Rewards and Death
-        if(self.frames_passed > 210): #Death for standing still too long
-            self.player_died = True
+
         
-        if new_score:
-            rewards += 10
-        else:
-            rewards -= 0.1
-
-        #Death Or Win
-        done = 0
-        if self.player_died:
-            rewards -= 50
-            done = 1
-            self.refresh()
-
-        if self.won:
-            rewards += 100
-            done = 1
-            self.refresh()
-        return rewards,done,aitoggle
+        return self.reward_function(action,prev_pos,advanced_foward,cars_infront)
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
@@ -150,17 +149,65 @@ class Crossy_roads:
     def car_nearme(self):
         player_pos = self.map.player_pos
         car_near = [
-            1 if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else 0, #infront middle
             1 if self.map.within_map(player_pos[0]-1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]-1] else 0, #infront left
+            1 if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else 0, #infront middle
             1 if self.map.within_map(player_pos[0]+1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]+1] else 0, #infront right
             1 if self.map.within_map(player_pos[0],player_pos[1]+1) and self.map.grid[player_pos[1]+1][player_pos[0]] else 0,
             1 if self.map.within_map(player_pos[0]-1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]-1] else 0,
             1 if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else 0,
                     ] #[car ahead,car behind, car left, car right]
         return car_near
+    def get_row_info(self):
+        row = self.map.player_pos[1]
+        direction = 0
+        speed = 0
+        for car_row in carRows.keys():
+            if row == car_row:
+                direction = carRows[car_row][0]
+                speed = carRows[car_row][1]
+        return direction,speed
     
-def initcars():
-    offsetTiming = [20, 30, 50]
+    def reward_function(self,action,prev_pos,advanced_foward,cars_infront):
+        reward = 0
+        done = 0
+        if(self.frames_passed > 210): #Death for standing still too long
+            self.player_died = True
+        
+        front_row = prev_pos[1]
+        if front_row in carRows:
+            if carRows[front_row][0] == -1:
+                if cars_infront[2] == 1 and action == pygame.K_w:
+                    reward -= 1000
+                elif cars_infront[2] == 0 and action == pygame.K_w:
+                    reward += 10
+            elif carRows[front_row][0] == 1:
+                if cars_infront[0] and action == pygame.K_w:
+                    reward -= 1000
+                elif cars_infront[0] and action == pygame.K_w:
+                    reward += 10
+            else:
+                reward += 1
+        
+        if advanced_foward:
+            reward += self.map.player_pos[1] * 10
+        #Death Or Win
+        if self.player_died:
+            reward -= 100
+            done = 1
+            self.refresh()
+
+        if self.won:
+            reward += 100
+            done = 1
+            self.refresh()
+        
+        return reward,done
+    
+def randomize_cars():
+    offsetTiming = [21, 30, 45]
+    directions = [-1,1]
     for row in carRows:
+        direction = random.randint(0,1)
         offset = random.randint(0,2)
-        carRows[row] = (carRows[row][0], offsetTiming[offset])
+        carRows[row] = (directions[direction],offsetTiming[offset])
+
