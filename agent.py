@@ -63,8 +63,8 @@ class Agent:
         else:
             curr_state = torch.tensor(state,dtype=torch.float)
             prediction = self.model.forward(curr_state)
-            print(prediction)
             action = torch.argmax(prediction).item()
+            print(state, action)
         return action
 
 def train():
@@ -101,8 +101,7 @@ def train():
             agent.train(before_state, action, reward, after_state, done)
             agent.memorize(before_state,action,reward,after_state,done)
         
-        if before_state and after_state:
-            print(before_state," ",prediction," ",reward," ",done," ",after_state)
+    
         
         if done:
             if high_score < game.highscore:

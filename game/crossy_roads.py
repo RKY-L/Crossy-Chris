@@ -65,6 +65,15 @@ class Crossy_roads:
         cars_infront = self.car_nearme()[:3]
         prev_pos = self.map.player_pos
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return None
+            elif not action and event.type == pygame.KEYDOWN:
+                action = event.key
+        if action:
+            if self.key_pressed(action) == "New Score":
+                advanced_foward = True
+        
         #Moving Cars in game
         self.spawncars()
         self.car_timer += 1
@@ -77,18 +86,8 @@ class Crossy_roads:
         self.cars = new_cars
         #==============================================
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return None
-            elif not action and event.type == pygame.KEYDOWN:
-                action = event.key
-        if action:
-            if self.key_pressed(action) == "New Score":
-                advanced_foward = True
-
         self.camera.update_camera(0,0,self.screen,self.world)
         self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
-
 
         for car in self.cars:
             self.screen.blit(car.car_img, (car.x, car.y - self.camera.y))
@@ -175,13 +174,13 @@ class Crossy_roads:
         #Negative reward for edge of map
         col = self.map.player_pos[0]
         if col < 2 or col > 8:
-            reward -= 50
+            reward -= 75
 
         if advanced_foward:
             reward += self.map.player_pos[1] * 5
         #Death Or Win
         if self.player_died:
-            reward -= 100
+            reward -= 200
             done = 1
             self.refresh()
 

@@ -10,9 +10,12 @@ clock = pygame.time.Clock()
 running = True
 tile_size = 50
 while running:
-    if game.play() == None:
+    reward, done = None, None
+    reward,done = game.play()
+    if reward == None:
         print("telling game to quit")
         running = False
+    
 
     #game.map.draw_grid(screen)
     game.frames_passed += 1
