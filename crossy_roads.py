@@ -12,6 +12,8 @@ CAMERA_W,CAMERA_H = SCREEN_W,SCREEN_H
 
 background = pygame.image.load("exp_bg.png")
 chicken = pygame.image.load("chicken.png")
+aichicken = pygame.transform.scale(pygame.image.load("Stitch.jpg"), (50,50))
+chickenDisplayed = chicken
 chickentoggle = pygame.transform.scale(pygame.image.load("normal_logo.png"),(75,75))
 evilchickentoggle = pygame.transform.scale(pygame.image.load("evil_logo.png"),(75,75))
 carpng = pygame.image.load("car.png")
@@ -31,6 +33,7 @@ class Crossy_roads:
         self.frames_passed = 0
         self.player_died = False
         self.button_rect = evilchickentoggle.get_rect(topleft=(10, 770))
+        self.chickenDisplayed = chicken
         self.refresh()
         
     def refresh(self):
@@ -71,16 +74,21 @@ class Crossy_roads:
                 action = event.key
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.button_rect.collidepoint(event.pos):
-                    print("hi button pressed")
                     if aitoggle == True:
-                        aitoggle = False
+                        self.player_died = True
+                        aitoggle = False #Human Playing
+                        self.chickenDisplayed = chicken
+                        print("hi human playing")
                     else:
-                        aitoggle = True  # switch variable
+                        self.player_died = True
+                        print("hi ai is playing")
+                        self.chickenDisplayed = aichicken
+                        aitoggle = True  # Chickenplaying
         if action:
             if self.key_pressed(action) == "New Score":
                 new_score = True
         self.camera.update_camera(0,0,self.screen,self.world)
-        self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
+        self.screen.blit(self.chickenDisplayed, (self.player.x, self.player.y - self.camera.y))
 
         #Moving Cars in game
 

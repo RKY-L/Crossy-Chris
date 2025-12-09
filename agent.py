@@ -70,7 +70,7 @@ def train():
     agent = Agent(game)
     high_score = 0
     time.sleep(2)
-    AItoggle = True #true = AI playing, false = human playing
+    AItoggle = False #true = AI playing, false = human playing
     while running:
         if AItoggle == True:
             #RL
