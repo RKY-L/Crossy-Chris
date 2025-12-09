@@ -54,6 +54,8 @@ class Map:
         return y,x
     
     def updatecarpos(self,x, y,direction):
+        if direction == 0:
+            direction = -1
         front_x = x // self.tile_size
         back_x = front_x - direction
 

@@ -24,7 +24,7 @@ class Agent:
 
         self.num_games = 0
 
-        self.model = ANN(10,256,4)
+        self.model = ANN(10,128,128,4)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
 
         self.speed = 3
@@ -126,8 +126,8 @@ def train():
         clock.tick(30)
 
 if __name__ == '__main__':
-    #train()
-    model = ANN(10,256,4)
+    train()
+    '''model = ANN(10,256,4)
     model.load_state_dict(torch.load("./model/model.pth", map_location="cpu"))
     model.eval()
     state = [0 ,0, 0, 0, 0, 26, 5,0,0,25]
@@ -136,4 +136,4 @@ if __name__ == '__main__':
     action = torch.argmax(prediction).item()
 
     print("Q-values:", prediction)
-    print("Predicted action:", action)
+    print("Predicted action:", action)'''

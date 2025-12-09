@@ -80,7 +80,7 @@ class Crossy_roads:
 
         new_cars = []
         for car in self.cars:
-            if car.x > -150 or car.x > 650:
+            if -150 < car.x < 700:
                 new_cars.append(car)
             car.update(self.map)
         self.cars = new_cars
@@ -99,7 +99,7 @@ class Crossy_roads:
         if(self.frames_passed > 210): #Death for standing still too long
             self.player_died = True
         
-        return self.reward_function(action,prev_pos,advanced_foward,cars_infront)
+        return self.reward_function(action,advanced_foward)
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
@@ -134,26 +134,32 @@ class Crossy_roads:
                 speed = carRows[car_row][1]
         return type,direction,speed
     
-    def reward_function(self,advanced_foward):
+    def reward_function(self,action,advanced_foward):
         reward = 0
         done = 0
 
-        if advanced_foward:
-            max_row = (WORLD_H//50) - 1
-            reward += (max_row - self.map.player_pos[1]) * 2
-        else:
-            reward -= 0.2
-
-        #Death Or Win
+        #Death Or Win Or Alive
         if self.player_died:
             reward -= 200
             done = 1
             self.refresh()
 
-        if self.won:
+        elif self.won:
             reward += 100
             done = 1
             self.refresh()
+        
+        else:
+            if advanced_foward:
+                max_row = (WORLD_H//50) - 1
+                reward += (max_row - self.map.player_pos[1]) * 2
+        
+            if action == 0: #standing still
+                reward -= 0.5
+            elif action != pygame.K_w: #Left or Right
+                reward -= 0.2
+            else:
+                reward += 0.5
         
         return reward,done
     
