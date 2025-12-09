@@ -12,6 +12,8 @@ CAMERA_W,CAMERA_H = SCREEN_W,SCREEN_H
 
 background = pygame.image.load("exp_bg.png")
 chicken = pygame.image.load("chicken.png")
+chickentoggle = pygame.transform.scale(pygame.image.load("normal_logo.png"),(75,75))
+evilchickentoggle = pygame.transform.scale(pygame.image.load("evil_logo.png"),(75,75))
 carpng = pygame.image.load("car.png")
 car_left_img = pygame.image.load("car.png")
 car_right_img = pygame.image.load("rev_car.png")
@@ -28,6 +30,7 @@ class Crossy_roads:
         self.car_timer = 0
         self.frames_passed = 0
         self.player_died = False
+        self.button_rect = evilchickentoggle.get_rect(topleft=(10, 770))
         self.refresh()
         
     def refresh(self):
@@ -56,8 +59,7 @@ class Crossy_roads:
                 else:
                     car.x = 650
 
-    
-    def play(self,action = None):
+    def play(self, aitoggle,action = None):
         rewards = 0
         new_score = False
         cars_infront = self.car_nearme()[:3]
@@ -67,10 +69,16 @@ class Crossy_roads:
                 return None
             elif not action and event.type == pygame.KEYDOWN:
                 action = event.key
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.button_rect.collidepoint(event.pos):
+                    print("hi button pressed")
+                    if aitoggle == True:
+                        aitoggle = False
+                    else:
+                        aitoggle = True  # switch variable
         if action:
             if self.key_pressed(action) == "New Score":
                 new_score = True
-
         self.camera.update_camera(0,0,self.screen,self.world)
         self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
 
@@ -90,6 +98,11 @@ class Crossy_roads:
 
         self.screen.blit(pygame.font.SysFont(None, 100).render(str(self.score), True, (255, 255, 255)), (25, 25))
         self.screen.blit(pygame.font.SysFont(None, 50).render("Highscore: " + str(self.highscore), True, (255, 255, 255)), (10, 850))
+        # Draw UI elements last so they're not covered by the world render
+        if aitoggle:
+            self.screen.blit(evilchickentoggle, (10, 770))
+        else:
+            self.screen.blit(chickentoggle, (10, 770))
         pygame.display.update()
         pygame.display.flip()
 
@@ -114,8 +127,7 @@ class Crossy_roads:
             rewards += 100
             done = 1
             self.refresh()
-        
-        return rewards,done
+        return rewards,done,aitoggle
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)

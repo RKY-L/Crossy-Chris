@@ -11,10 +11,10 @@ running = True
 tile_size = 50
 initcars()
 while running:
-    if game.play() == None:
+    if game.play(False) == None:
         print("telling game to quit")
         running = False
-
+    game.play(False)
     #game.map.draw_grid(screen)
     game.frames_passed += 1
     clock.tick(30)

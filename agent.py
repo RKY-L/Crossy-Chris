@@ -70,26 +70,30 @@ def train():
     agent = Agent(game)
     high_score = 0
     time.sleep(2)
+    AItoggle = True #true = AI playing, false = human playing
     while running:
-        #RL
-        state = agent.get_state()
-        action = agent.actions[agent.get_action(state)]
+        if AItoggle == True:
+            #RL
+            state = agent.get_state()
+            action = agent.actions[agent.get_action(state)]
 
-        reward,done = game.play(action)
-        if reward is None:
-            running = False
-        
-        new_state = agent.get_state()
-        agent.train(state, action, reward, new_state, done)
+            reward,done, AItoggle = game.play(AItoggle, action)
+            if reward is None:
+                running = False
+            
+            new_state = agent.get_state()
+            agent.train(state, action, reward, new_state, done)
 
-        agent.memorize(state,action,reward,new_state,done)
-        
-        if done:
-            if high_score < game.highscore:
-                agent.model.save()
-                high_score = game.highscore
-            agent.num_games += 1
-            agent.batch_train()
+            agent.memorize(state,action,reward,new_state,done)
+            
+            if done:
+                if high_score < game.highscore:
+                    agent.model.save()
+                    high_score = game.highscore
+                agent.num_games += 1
+                agent.batch_train()
+        else:
+            AItoggle = game.play(AItoggle, None)[2]
 
         game.frames_passed += 1
         clock.tick(30)
