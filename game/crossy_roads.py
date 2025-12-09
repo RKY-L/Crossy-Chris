@@ -122,16 +122,15 @@ class Crossy_roads:
             1 if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else 0, #Right
                     ] 
         return car_near
-    def get_row_info(self):
-        row = self.map.player_pos[1]
+    def get_row_info(self,row_index=None):
+        if row_index == None:
+            row_index = self.map.player_pos[1]
         type = 0
-        direction = 0
-        gap = 0
+        direction = -1
         for car_row in carRows.keys():
-            if row == car_row:
+            if row_index == car_row:
                 type = 1
                 direction = carRows[car_row][0]
-                gap = carRows[car_row][1]
         return type,direction
     
     def reward_function(self,action,advanced_foward):

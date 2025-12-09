@@ -6,6 +6,7 @@ import time
 from model.model import ANN, QTrainer
 from collections import deque
 from model.helper import plot
+import os
 BATCH_SIZE = 100
 class Agent:
     def __init__(self,game):
@@ -15,7 +16,7 @@ class Agent:
         #Making a new score = +10 reward
         #Touching finish line = +100 Reward
         self.gamma = 0.9
-        self.epsilon = 0.18
+        self.epsilon = 1
         self.epsilon_decay = 0.999
         self.min_epsilon = 0.01
         self.actions = [0,pygame.K_w,pygame.K_a,pygame.K_d]
@@ -24,17 +25,20 @@ class Agent:
 
         self.num_games = 0
 
-        self.model = ANN(9,64,32,4)
+        self.model = ANN(11,64,32,4)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
 
         self.speed = 3
     
     def get_state(self):
-        #[TL,TM,TR,L,R,player_row,player_col,row_type,direction]
+        #[TL,TM,TR,L,R,player_row,player_col,row_type,direction,next_row_type,next_row_direction]
         state = self.enviroment.car_nearme()
         state.append(self.enviroment.map.player_row()/28.0)
         state.append(self.enviroment.map.player_col()/10.0)
         row_type,row_dir = self.enviroment.get_row_info()
+        state.append(row_type)
+        state.append(row_dir)
+        row_type,row_dir = self.enviroment.get_row_info(self.enviroment.map.player_pos[1]-1)
         state.append(row_type)
         state.append(row_dir)
         return state
@@ -73,8 +77,12 @@ def train():
     running = True
     #randomize_cars()
     game = Crossy_roads()
+
+    #Loading Model
     agent = Agent(game)
-    agent.model.load_state_dict(torch.load('./model/model.pth'))
+    if os.path.exists('./model/model.pth'):
+        agent.model.load_state_dict(torch.load('./model/model.pth'))
+
     high_score = 0
     time.sleep(1)
     player_frames =  0
@@ -131,7 +139,8 @@ if __name__ == '__main__':
     '''model = ANN(10,64,64,4)
     model.load_state_dict(torch.load("./model/model.pth", map_location="cpu"))
     model.eval()
-    state = [0 ,0, 0, 0, 0, 26, 5,0,0,25]
+    #[TL,TM,TR,L,R,player_row,player_col,row_type,direction,next_row_type,next_row_direction]
+    state = [0 ,0, 0, 0, 0, 26, 5,0,-1,1,0]
     curr_state = torch.tensor(state,dtype=torch.float)
     prediction = model.forward(curr_state)
     action = torch.argmax(prediction).item()
