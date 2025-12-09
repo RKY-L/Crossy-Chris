@@ -79,42 +79,50 @@ def train():
     high_score = 0
     time.sleep(1)
     player_frames =  0
-
+    AItoggle = False
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
     while running:
         #RL
-        if player_frames % agent.speed == 0:
-            state = agent.get_state()
-            print(state)
-            action = agent.actions[agent.get_action(state)]
+        if AItoggle == True:
+            if player_frames % agent.speed == 0:
+                state = agent.get_state()
+                action = agent.actions[agent.get_action(state)]
+            rd,AItoggle = game.play(AItoggle, action)
+            reward = rd[0]
+            done = rd[1]
+            if reward is None:
+                running = False
+            if player_frames % agent.speed == 0:
+                new_state = agent.get_state()
+                agent.train(state, action, reward, new_state, done)
 
-        reward,done = game.play(action)
-        if reward is None:
-            running = False
-        if player_frames % agent.speed == 0:
-            new_state = agent.get_state()
-            agent.train(state, action, reward, new_state, done)
+                agent.memorize(state,action,reward,new_state,done)
+            
+            if done:
+                if high_score < game.highscore:
+                    agent.model.save()
+                    high_score = game.highscore
+                agent.num_games += 1
+                agent.batch_train()
+                player_frames = 0
+            else:
+                AItoggle = game.play(AItoggle, None)[1]
 
-            agent.memorize(state,action,reward,new_state,done)
-        
-        if done:
-            if high_score < game.highscore:
-                agent.model.save()
-                high_score = game.highscore
-            agent.num_games += 1
-            agent.batch_train()
-            player_frames = 0
+                #plotting
+                print('Game', agent.num_games, 'Score', game.prev_score, 'Record:', high_score)
 
-            #plotting
-            print('Game', agent.num_games, 'Score', game.prev_score, 'Record:', high_score)
-
-            plot_scores.append(game.prev_score)
-            total_score += game.prev_score
-            mean_score = total_score / agent.num_games
-            plot_mean_scores.append(mean_score)
-            plot(plot_scores, plot_mean_scores)
+                plot_scores.append(game.prev_score)
+                total_score += game.prev_score
+                if agent.num_games != 0:
+                    mean_score = total_score / agent.num_games
+                else:
+                    mean_score = 0
+                plot_mean_scores.append(mean_score)
+                plot(plot_scores, plot_mean_scores)
+        else:
+            AItoggle = game.play(AItoggle, None)[1]
 
 
         action = 0

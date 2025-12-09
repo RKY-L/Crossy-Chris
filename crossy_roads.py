@@ -12,6 +12,10 @@ CAMERA_W,CAMERA_H = SCREEN_W,SCREEN_H
 
 background = pygame.image.load("exp_bg.png")
 chicken = pygame.image.load("chicken.png")
+aichicken = pygame.transform.scale(pygame.image.load("Stitch.jpg"), (50,50))
+chickenDisplayed = chicken
+chickentoggle = pygame.transform.scale(pygame.image.load("normal_logo.png"),(75,75))
+evilchickentoggle = pygame.transform.scale(pygame.image.load("evil_logo.png"),(75,75))
 carpng = pygame.image.load("car.png")
 car_left_img = pygame.image.load("car.png")
 car_right_img = pygame.image.load("rev_car.png")
@@ -29,6 +33,8 @@ class Crossy_roads:
         self.car_timer = 0
         self.frames_passed = 0
         self.player_died = False
+        self.button_rect = evilchickentoggle.get_rect(topleft=(10, 770))
+        self.chickenDisplayed = chicken
         self.refresh()
         
     def refresh(self):
@@ -59,11 +65,29 @@ class Crossy_roads:
                 else:
                     car.x = 650
 
-    
-    def play(self,action = None):
+    def play(self, aitoggle,action = None):
         advanced_foward = False
-        cars_infront = self.car_nearme()[:3]
         prev_pos = self.map.player_pos
+        rewards = 0
+        new_score = False
+        cars_infront = self.car_nearme()[:3]
+
+        for event in pygame.event.get():
+            print(event)
+            if event.type == pygame.QUIT:
+                return None
+            elif not action and event.type == pygame.KEYDOWN:
+                action = event.key
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.button_rect.collidepoint(event.pos):
+                    if aitoggle == True:
+                        self.player_died = True
+                        aitoggle = False #Human Playing
+                        self.chickenDisplayed = chicken
+                    else:
+                        self.player_died = True
+                        self.chickenDisplayed = aichicken
+                        aitoggle = True  # Chickenplaying
 
         #Moving Cars in game
         self.spawncars()
@@ -75,7 +99,6 @@ class Crossy_roads:
                 new_cars.append(car)
             car.update(self.map)
         self.cars = new_cars
-        #==============================================
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -87,20 +110,24 @@ class Crossy_roads:
                 advanced_foward = True
 
         self.camera.update_camera(0,0,self.screen,self.world)
-        self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
+        self.screen.blit(self.chickenDisplayed, (self.player.x, self.player.y - self.camera.y))
 
 
         for car in self.cars:
             self.screen.blit(car.car_img, (car.x, car.y - self.camera.y))
         self.screen.blit(pygame.font.SysFont(None, 100).render(str(self.score), True, (255, 255, 255)), (25, 25))
         self.screen.blit(pygame.font.SysFont(None, 50).render("Highscore: " + str(self.highscore), True, (255, 255, 255)), (10, 850))
+        # Draw UI elements last so they're not covered by the world render
+        if aitoggle:
+            self.screen.blit(evilchickentoggle, (10, 770))
+        else:
+            self.screen.blit(chickentoggle, (10, 770))
         pygame.display.update()
         pygame.display.flip()
 
 
 
-        
-        return self.reward_function(action,prev_pos,advanced_foward,cars_infront)
+        return self.reward_function(action,prev_pos,advanced_foward,cars_infront), aitoggle
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
@@ -166,7 +193,6 @@ class Crossy_roads:
             reward += 100
             done = 1
             self.refresh()
-        
         return reward,done
     
 def randomize_cars():
