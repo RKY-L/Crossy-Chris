@@ -15,7 +15,7 @@ chicken = pygame.image.load("./game/chicken.png")
 carpng = pygame.image.load("./game/car.png")
 car_left_img = pygame.image.load("./game/car.png")
 car_right_img = pygame.image.load("./game/rev_car.png")
-carRows = {25:(-1,25), 23:(1,30), 22:(-1,50), 19:(-1,30), 15:(1,30), 13:(-1,25), 12:(1,50), 11:(1,30), 9:(-1,25), 8:(1,50), 5:(-1,25), 1:(1,30)}
+carRows = {25:(0,25), 23:(1,30), 22:(0,50), 19:(0,30), 15:(1,30), 13:(0,25), 12:(1,50), 11:(1,30), 9:(0,25), 8:(1,50), 5:(0,25), 1:(1,30)}
 cartimer = 0
 
 class Crossy_roads:
@@ -53,8 +53,8 @@ class Crossy_roads:
                 car = Car(row)
                 self.cars.append(car)
                 car.direction = carRows[row][0]
-                car.car_img = car_left_img if car.direction == -1 else car_right_img
-                if car.direction == -1: #spawn right move left
+                car.car_img = car_left_img if car.direction == 0 else car_right_img
+                if car.direction == 0: #spawn right move left
                     car.x = 650
                 else: #spawn left move right
                     car.x = -100
@@ -96,8 +96,8 @@ class Crossy_roads:
         pygame.display.update()
         pygame.display.flip()
 
-
-
+        if(self.frames_passed > 210): #Death for standing still too long
+            self.player_died = True
         
         return self.reward_function(action,prev_pos,advanced_foward,cars_infront)
     
@@ -134,50 +134,16 @@ class Crossy_roads:
                 speed = carRows[car_row][1]
         return type,direction,speed
     
-    def reward_function(self,action,prev_pos,advanced_foward,cars_infront):
+    def reward_function(self,advanced_foward):
         reward = 0
         done = 0
-        if(self.frames_passed > 210): #Death for standing still too long
-            self.player_died = True
-        
-        #Cars infront
-        prev_cnme = self.car_nearme(prev_pos)
-        prev_row = prev_pos[1]
-        prev_row_infront = prev_row - 1
-        if prev_row_infront in carRows:
-            if carRows[prev_row_infront][0] == -1: #Cars moving <-
-                if prev_cnme[2] == 1 and action == pygame.K_w:
-                    reward -= 1000
-                elif cars_infront[2] == 0 and action == pygame.K_w:
-                    reward += 10
-            elif carRows[prev_row_infront][0] == 1: #Cars moving ->
-                if prev_cnme[0] == 1 and action == pygame.K_w:
-                    reward -= 1000
-                elif cars_infront[0] and action == pygame.K_w:
-                    reward += 10
-
-        #cars to the side
-        if prev_row in carRows:
-            if carRows[prev_row][0] == -1: #Cars moving <-
-                if prev_cnme[4] == 1 and action == pygame.K_d or action == 0: #car is on the right
-                    print("Car from the right ran me over")
-                    reward -= 1000
-                else:
-                    reward += 10
-            elif carRows[prev_row][0] == 1: #Cars moving ->
-                if prev_cnme[3] == 1 and action == pygame.K_a or action == 0: #car is on the left
-                    print("Car from the left ran me over")
-                    reward -= 1000
-                else:
-                    reward += 10
-
-        #Negative reward for edge of map
-        col = self.map.player_pos[0]
-        if col < 2 or col > 8:
-            reward -= 75
 
         if advanced_foward:
-            reward += self.map.player_pos[1] * 5
+            max_row = (WORLD_H//50) - 1
+            reward += (max_row - self.map.player_pos[1]) * 2
+        else:
+            reward -= 0.2
+
         #Death Or Win
         if self.player_died:
             reward -= 200
@@ -193,7 +159,7 @@ class Crossy_roads:
     
 def randomize_cars():
     offsetTiming = [21, 30, 45]
-    directions = [-1,1]
+    directions = [0,1]
     for row in carRows:
         direction = random.randint(0,1)
         offset = random.randint(0,2)

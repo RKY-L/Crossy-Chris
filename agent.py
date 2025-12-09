@@ -126,14 +126,14 @@ def train():
         clock.tick(30)
 
 if __name__ == '__main__':
-    train()
-    '''model = ANN(10,256,4)
+    #train()
+    model = ANN(10,256,4)
     model.load_state_dict(torch.load("./model/model.pth", map_location="cpu"))
     model.eval()
-    state = [1 ,1, 1, 0, 0, 0, 26, 5,-1,25]
+    state = [0 ,0, 0, 0, 0, 26, 5,0,0,25]
     curr_state = torch.tensor(state,dtype=torch.float)
     prediction = model.forward(curr_state)
     action = torch.argmax(prediction).item()
 
     print("Q-values:", prediction)
-    print("Predicted action:", action)'''
+    print("Predicted action:", action)
