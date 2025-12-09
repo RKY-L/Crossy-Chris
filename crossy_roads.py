@@ -73,6 +73,7 @@ class Crossy_roads:
         cars_infront = self.car_nearme()[:3]
 
         for event in pygame.event.get():
+            print(event)
             if event.type == pygame.QUIT:
                 return None
             elif not action and event.type == pygame.KEYDOWN:
@@ -83,17 +84,10 @@ class Crossy_roads:
                         self.player_died = True
                         aitoggle = False #Human Playing
                         self.chickenDisplayed = chicken
-                        print("hi human playing")
                     else:
                         self.player_died = True
-                        print("hi ai is playing")
                         self.chickenDisplayed = aichicken
                         aitoggle = True  # Chickenplaying
-        if action:
-            if self.key_pressed(action) == "New Score":
-                new_score = True
-        self.camera.update_camera(0,0,self.screen,self.world)
-        self.screen.blit(self.chickenDisplayed, (self.player.x, self.player.y - self.camera.y)), aitoggle
 
         #Moving Cars in game
         self.spawncars()
@@ -116,7 +110,7 @@ class Crossy_roads:
                 advanced_foward = True
 
         self.camera.update_camera(0,0,self.screen,self.world)
-        self.screen.blit(chicken, (self.player.x, self.player.y - self.camera.y))
+        self.screen.blit(self.chickenDisplayed, (self.player.x, self.player.y - self.camera.y))
 
 
         for car in self.cars:
@@ -133,8 +127,7 @@ class Crossy_roads:
 
 
 
-        
-        return self.reward_function(action,prev_pos,advanced_foward,cars_infront)
+        return self.reward_function(action,prev_pos,advanced_foward,cars_infront), aitoggle
     
     def key_pressed(self,key):
         self.player.key_pressed(self.map,key)
@@ -200,7 +193,6 @@ class Crossy_roads:
             reward += 100
             done = 1
             self.refresh()
-        
         return reward,done
     
 def randomize_cars():

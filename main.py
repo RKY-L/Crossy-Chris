@@ -12,5 +12,4 @@ running = True
 tile_size = 50
 train()
 
-
 pygame.quit()
