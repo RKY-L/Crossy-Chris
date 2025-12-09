@@ -54,10 +54,10 @@ class Crossy_roads:
                 self.cars.append(car)
                 car.direction = carRows[row][0]
                 car.car_img = car_left_img if car.direction == -1 else car_right_img
-                if car.direction == 1:
-                    car.x = -100
-                else:
+                if car.direction == -1: #spawn right move left
                     car.x = 650
+                else: #spawn left move right
+                    car.x = -100
 
     
     def play(self,action = None):
@@ -112,8 +112,9 @@ class Crossy_roads:
             return "New Score"
         return "No New Score"
     
-    def car_nearme(self):
-        player_pos = self.map.player_pos
+    def car_nearme(self,player_pos = None):
+        if player_pos == None:
+            player_pos = self.map.player_pos
         car_near = [
             1 if self.map.within_map(player_pos[0]-1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]-1] else 0, #TL
             1 if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else 0, #TM
@@ -140,23 +141,39 @@ class Crossy_roads:
         if(self.frames_passed > 210): #Death for standing still too long
             self.player_died = True
         
-        front_row = prev_pos[1]
-        if front_row in carRows:
-            if carRows[front_row][0] == -1:
-                if cars_infront[2] == 1 and action == pygame.K_w:
+        #Cars infront
+        prev_cnme = self.car_nearme(prev_pos)
+        prev_row = prev_pos[1]
+        prev_row_infront = prev_row - 1
+        if prev_row_infront in carRows:
+            if carRows[prev_row_infront][0] == -1: #Cars moving <-
+                if prev_cnme[2] == 1 and action == pygame.K_w:
                     reward -= 1000
                 elif cars_infront[2] == 0 and action == pygame.K_w:
                     reward += 10
-            elif carRows[front_row][0] == 1:
-                if cars_infront[0] and action == pygame.K_w:
+            elif carRows[prev_row_infront][0] == 1: #Cars moving ->
+                if prev_cnme[0] == 1 and action == pygame.K_w:
                     reward -= 1000
                 elif cars_infront[0] and action == pygame.K_w:
                     reward += 10
-            else:
-                reward += 1
-        
+
+        #cars to the side
+        if prev_row in carRows:
+            if carRows[prev_row][0] == -1: #Cars moving <-
+                if prev_cnme[4] == 1 and action == pygame.K_d or action == 0: #car is on the right
+                    print("Car from the right ran me over")
+                    reward -= 1000
+                else:
+                    reward += 10
+            elif carRows[prev_row][0] == 1: #Cars moving ->
+                if prev_cnme[3] == 1 and action == pygame.K_a or action == 0: #car is on the left
+                    print("Car from the left ran me over")
+                    reward -= 1000
+                else:
+                    reward += 10
+            
         if advanced_foward:
-            reward += self.map.player_pos[1] * 10
+            reward += self.map.player_pos[1] * 5
         #Death Or Win
         if self.player_died:
             reward -= 100

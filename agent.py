@@ -18,7 +18,7 @@ class Agent:
         self.epsilon = 1.0
         self.epsilon_decay = 0.995
         self.min_epsilon = 0.01
-        self.actions = [pygame.K_w,pygame.K_a,pygame.K_d,0]
+        self.actions = [0,pygame.K_w,pygame.K_a,pygame.K_d]
         self.enviroment = game
         self.memory = deque(maxlen=100000)
 
@@ -27,7 +27,7 @@ class Agent:
         self.model = ANN(10,256,4)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
 
-        self.speed = 5
+        self.speed = 3
     
     def get_state(self):
         #[TL,TM,TR,L,R,player_row,player_col,row_type,direction,car_speed]
@@ -86,19 +86,23 @@ def train():
     total_score = 0
     while running:
         #RL
+        before_state = None
+        after_state = None
         if player_frames % agent.speed == 0:
-            state = agent.get_state()
-            print(state)
-            action = agent.actions[agent.get_action(state)]
+            before_state = agent.get_state()
+            prediction = agent.get_action(before_state)
+            action = agent.actions[prediction]
 
         reward,done = game.play(action)
         if reward is None:
             running = False
         if player_frames % agent.speed == 0:
-            new_state = agent.get_state()
-            agent.train(state, action, reward, new_state, done)
-
-            agent.memorize(state,action,reward,new_state,done)
+            after_state = agent.get_state()
+            agent.train(before_state, action, reward, after_state, done)
+            agent.memorize(before_state,action,reward,after_state,done)
+        
+        if before_state and after_state:
+            print(before_state," ",prediction," ",reward," ",done," ",after_state)
         
         if done:
             if high_score < game.highscore:
@@ -110,7 +114,6 @@ def train():
 
             #plotting
             print('Game', agent.num_games, 'Score', game.prev_score, 'Record:', high_score)
-
             plot_scores.append(game.prev_score)
             total_score += game.prev_score
             mean_score = total_score / agent.num_games
@@ -124,8 +127,8 @@ def train():
         clock.tick(30)
 
 if __name__ == '__main__':
-    #train()
-    model = ANN(10,256,5)
+    train()
+    '''model = ANN(10,256,4)
     model.load_state_dict(torch.load("./model/model.pth", map_location="cpu"))
     model.eval()
     state = [1 ,1, 1, 0, 0, 0, 26, 5,-1,25]
@@ -134,4 +137,4 @@ if __name__ == '__main__':
     action = torch.argmax(prediction).item()
 
     print("Q-values:", prediction)
-    print("Predicted action:", action)
+    print("Predicted action:", action)'''
