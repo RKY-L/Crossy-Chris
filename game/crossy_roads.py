@@ -1,20 +1,20 @@
 import pygame
 import random
 
-from player import Player
-from map import Map
-from camera import Camera
-from car import Car
+from game.player import Player
+from game.map import Map
+from game.camera import Camera
+from game.car import Car
 SCREEN_W, SCREEN_H = 550, 900
 WORLD_W,WORLD_H = SCREEN_W,1450
 CAMERA_W,CAMERA_H = SCREEN_W,SCREEN_H
 
 
-background = pygame.image.load("exp_bg.png")
-chicken = pygame.image.load("chicken.png")
-carpng = pygame.image.load("car.png")
-car_left_img = pygame.image.load("car.png")
-car_right_img = pygame.image.load("rev_car.png")
+background = pygame.image.load("./game/exp_bg.png")
+chicken = pygame.image.load("./game/chicken.png")
+carpng = pygame.image.load("./game/car.png")
+car_left_img = pygame.image.load("./game/car.png")
+car_right_img = pygame.image.load("./game/rev_car.png")
 carRows = {25:(-1,25), 23:(1,30), 22:(-1,50), 19:(-1,30), 15:(1,30), 13:(-1,25), 12:(1,50), 11:(1,30), 9:(-1,25), 8:(1,50), 5:(-1,25), 1:(1,30)}
 cartimer = 0
 

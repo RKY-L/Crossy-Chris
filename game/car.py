@@ -1,5 +1,5 @@
 import random
-from map import Map
+from game.map import Map
 
 class Car:
     def __init__(self, road):

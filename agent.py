@@ -1,11 +1,11 @@
 import torch
 import pygame
 import random
-from crossy_roads import *
+from game.crossy_roads import *
 import time
-from model import ANN, QTrainer
+from model.model import ANN, QTrainer
 from collections import deque
-from helper import plot
+from model.helper import plot
 BATCH_SIZE = 100
 class Agent:
     def __init__(self,game):
@@ -69,7 +69,7 @@ class Agent:
 def train():
     pygame.init()
     pygame.display.set_caption("Crossy Chris")
-    normal_logo = pygame.image.load("./normal_logo.png")
+    normal_logo = pygame.image.load("./game/normal_logo.png")
     pygame.display.set_icon(normal_logo)
     clock = pygame.time.Clock()
     running = True
@@ -123,16 +123,14 @@ def train():
         clock.tick(30)
 
 if __name__ == '__main__':
-    train()
-    '''model = ANN(10,256,5)
+    #train()
+    model = ANN(10,256,5)
     model.load_state_dict(torch.load("./model/model.pth", map_location="cpu"))
     model.eval()
     state = [1 ,1, 1, 0, 0, 0, 26, 5,-1,25]
-    state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
-    with torch.no_grad():
-        q_values = model(state_tensor)
-    
-    action = torch.argmax(q_values).item()
+    curr_state = torch.tensor(state,dtype=torch.float)
+    prediction = model.forward(curr_state)
+    action = torch.argmax(prediction).item()
 
-    print("Q-values:", q_values)
-    print("Predicted action:", action)'''
+    print("Q-values:", prediction)
+    print("Predicted action:", action)
