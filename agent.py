@@ -97,6 +97,8 @@ def train():
     total_score = 0
     above_halfway = 0
     above_halfway_percent = []
+    ma_100 = deque(maxlen=100)
+    avg_ma_100 = []
     while running:
         #RL
         before_state = agent.get_state()
@@ -125,12 +127,13 @@ def train():
 
             #plotting
             scores.append(game.prev_score)
+            ma_100.append(game.prev_score)
             total_score += game.prev_score
             mean_scores.append(total_score / agent.num_games)
             above_halfway_percent.append((above_halfway/agent.num_games)*26)
+            avg_ma_100.append(sum(ma_100)/len(ma_100))
+            plot(scores, mean_scores,above_halfway_percent,avg_ma_100)
         
-        if agent.num_games % 100:
-            plot(scores, mean_scores,above_halfway_percent)
 
         player_frames += 1
         game.frames_passed += 1
