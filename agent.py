@@ -26,7 +26,7 @@ class Agent:
 
         self.num_games = 0
 
-        self.model = ANN(13,128,64,4)
+        self.model = ANN(15,128,64,4)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
     
     def get_state(self):
@@ -34,7 +34,8 @@ class Agent:
         # player_row,player_col,
         # row_type,direction,
         # next_row_type,next_row_direction,
-        # next_next_rt, next_next_rd]
+        # next_next_rt, next_next_rd,
+        # nnn_rt, nnn_rd]
         state = self.enviroment.whats_nearme()
         state.append(self.enviroment.map.player_row()/28.0)
         state.append(self.enviroment.map.player_col()/10.0)
@@ -45,6 +46,9 @@ class Agent:
         state.append(row_type)
         state.append(row_dir)
         row_type,row_dir = self.enviroment.get_row_info(self.enviroment.map.player_pos[1]-2)
+        state.append(row_type)
+        state.append(row_dir)
+        row_type,row_dir = self.enviroment.get_row_info(self.enviroment.map.player_pos[1]-3)
         state.append(row_type)
         state.append(row_dir)
         return state

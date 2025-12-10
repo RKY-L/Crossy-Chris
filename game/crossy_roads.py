@@ -16,7 +16,7 @@ carpng = pygame.image.load("./game/car.png")
 car_left_img = pygame.image.load("./game/car.png")
 car_right_img = pygame.image.load("./game/rev_car.png")
 
-aichicken = pygame.transform.scale(pygame.image.load("./game/Stitch.jpg"), (50,50))
+aichicken = pygame.transform.scale(pygame.image.load("./game/evil_chicken"), (50,50))
 chickenDisplayed = chicken
 chickentoggle = pygame.transform.scale(pygame.image.load("./game/normal_logo.png"),(75,75))
 evilchickentoggle = pygame.transform.scale(pygame.image.load("./game/evil_logo.png"),(75,75))
