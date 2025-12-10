@@ -5,14 +5,16 @@ import torch.nn.functional as activeF
 import os
 
 class ANN(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size, hidden_size, hidden_size2, output_size):
         super().__init__()
         self.layer1 = nn.Linear(input_size, hidden_size)
-        self.layer2 = nn.Linear(hidden_size, output_size)
+        self.layer2 = nn.Linear(hidden_size, hidden_size2)
+        self.layer3 = nn.Linear(hidden_size2,output_size)
 
     def forward(self, value):
         value = activeF.sigmoid(self.layer1(value))
-        value = self.layer2(value)
+        value = activeF.sigmoid(self.layer2(value))
+        value = self.layer3(value)
         return value
     
     def save(self, file_name = 'model.pth'):
@@ -47,16 +49,15 @@ class QTrainer:
 
         pred = self.model(state)
 
-        target = pred.clone()
+        target = pred.clone().detach()
         for idx in range(len(done)):
             Q_new = reward[idx]
             if not done[idx]:
-                #Update Q table from slides. 
                 Q_new = reward[idx] + self.gamma * torch.max(self.model(new_state[idx]))
-            target[idx][torch.argmax(action[idx]).item()] = Q_new
+            target[idx][action[idx]] = Q_new
         
 
         self.optimizer.zero_grad()
-        loss = self.lossfunct(target, pred)
+        loss = self.lossfunct(pred, target)
         loss.backward()
         self.optimizer.step()
