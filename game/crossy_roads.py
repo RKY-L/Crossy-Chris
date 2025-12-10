@@ -62,7 +62,7 @@ class Crossy_roads:
     
     def play(self,action = None):
         advanced_foward = False
-        cars_infront = self.car_nearme()[:3]
+        cars_infront = self.whats_nearme()[:3]
         prev_pos = self.map.player_pos
 
         for event in pygame.event.get():
@@ -111,17 +111,23 @@ class Crossy_roads:
             return "New Score"
         return "No New Score"
     
-    def car_nearme(self,player_pos = None):
+    def whats_nearme(self,player_pos = None):
         if player_pos == None:
             player_pos = self.map.player_pos
-        car_near = [
-            1 if self.map.within_map(player_pos[0]-1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]-1] else 0, #TL
-            1 if self.map.within_map(player_pos[0],player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]] else 0, #TM
-            1 if self.map.within_map(player_pos[0]+1,player_pos[1]-1) and self.map.grid[player_pos[1]-1][player_pos[0]+1] else 0, #TR
-            1 if self.map.within_map(player_pos[0]-1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]-1] else 0, #Left
-            1 if self.map.within_map(player_pos[0]+1,player_pos[1]) and self.map.grid[player_pos[1]][player_pos[0]+1] else 0, #Right
-                    ] 
+        positions = [(player_pos[0]-1,player_pos[1]-1), #TL
+                     (player_pos[0],player_pos[1]-1), #TM
+                     (player_pos[0]+1,player_pos[1]-1), #TR
+                     (player_pos[0]-1,player_pos[1]), #Left
+                     (player_pos[0]+1,player_pos[1])] #Right
+        car_near = []
+        for x,y in positions:
+            if not self.map.within_map(x,y):
+                car_near.append(-1)
+            else:
+                car_near.append(1 if self.map.grid[y][x] else 0)
+
         return car_near
+    
     def get_row_info(self,row_index=None):
         if row_index == None:
             row_index = self.map.player_pos[1]
@@ -142,27 +148,22 @@ class Crossy_roads:
             reward -= 100
             done = 1
             self.refresh()
-
         elif self.won:
             reward += 100
             done = 1
             self.refresh()
-        
         else:
             if advanced_foward:
                 max_row = (WORLD_H//50) - 1
-                reward += (max_row - self.map.player_pos[1]) * 2
+                bonus = (max_row - self.map.player_pos[1])
+                reward += 10 + bonus
         
             if action == 0: #standing still
                 reward -= 0.5
-            elif action != pygame.K_w: #Left or Right
-                reward -= 0.2
-            else:
-                reward += 10
             
             if self.map.player_pos[0] == 0 or self.map.player_pos[0] == 10:
-                reward -= 2
-        
+                reward -= 5
+
         return reward,done
     
 def randomize_cars():

@@ -8,6 +8,7 @@ from collections import deque
 from model.helper import plot
 import os
 BATCH_SIZE = 100
+MEMORY_SIZE = 100000
 class Agent:
     def __init__(self,game):
         #Running into a car = -100 reward
@@ -15,30 +16,37 @@ class Agent:
         #Standing still for 210 frames = -100 reward
         #Making a new score = +10 reward
         #Touching finish line = +100 Reward
-        self.gamma = 0.9
-        self.epsilon = 1
-        self.epsilon_decay = 0.999
+        self.gamma = 0.99
+        self.epsilon = 1.0
+        self.epsilon_decay = 0.9995
         self.min_epsilon = 0.01
         self.actions = [0,pygame.K_w,pygame.K_a,pygame.K_d]
         self.enviroment = game
-        self.memory = deque(maxlen=100000)
+        self.memory = deque(maxlen=MEMORY_SIZE)
 
         self.num_games = 0
 
-        self.model = ANN(11,64,32,4)
+        self.model = ANN(13,128,64,4)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
 
-        self.speed = 3
+        self.speed = 1
     
     def get_state(self):
-        #[TL,TM,TR,L,R,player_row,player_col,row_type,direction,next_row_type,next_row_direction]
-        state = self.enviroment.car_nearme()
+        #[TL,TM,TR,L,R,
+        # player_row,player_col,
+        # row_type,direction,
+        # next_row_type,next_row_direction,
+        # next_next_rt, next_next_rd]
+        state = self.enviroment.whats_nearme()
         state.append(self.enviroment.map.player_row()/28.0)
         state.append(self.enviroment.map.player_col()/10.0)
         row_type,row_dir = self.enviroment.get_row_info()
         state.append(row_type)
         state.append(row_dir)
         row_type,row_dir = self.enviroment.get_row_info(self.enviroment.map.player_pos[1]-1)
+        state.append(row_type)
+        state.append(row_dir)
+        row_type,row_dir = self.enviroment.get_row_info(self.enviroment.map.player_pos[1]-2)
         state.append(row_type)
         state.append(row_dir)
         return state
@@ -65,7 +73,6 @@ class Agent:
             curr_state = torch.tensor(state,dtype=torch.float)
             prediction = self.model.forward(curr_state)
             prediction = torch.argmax(prediction).item()
-            print(state, prediction, self.num_games, self.epsilon)
         return prediction
 
 def train():
@@ -106,11 +113,12 @@ def train():
             running = False
         if player_frames % agent.speed == 0:
             after_state = agent.get_state()
+            print(before_state, prediction,reward,done,after_state)
             agent.train(before_state, prediction, reward, after_state, done)
             agent.memorize(before_state,prediction,reward,after_state,done)
         
         if done:
-            if high_score < game.highscore:
+            if high_score < game.highscore or game.prev_score == 26:
                 agent.model.save()
                 high_score = game.highscore
             agent.num_games += 1
@@ -136,7 +144,7 @@ def train():
 
 if __name__ == '__main__':
     train()
-    '''model = ANN(10,64,64,4)
+    '''model = ANN(11,64,32,4)
     model.load_state_dict(torch.load("./model/model.pth", map_location="cpu"))
     model.eval()
     #[TL,TM,TR,L,R,player_row,player_col,row_type,direction,next_row_type,next_row_direction]
