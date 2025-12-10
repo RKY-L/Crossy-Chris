@@ -91,7 +91,7 @@ def train():
     high_score = 0
     time.sleep(1)
     player_frames =  0
-    AItoggle = False
+    AItoggle = True
     scores = []
     mean_scores = []
     total_score = 0
