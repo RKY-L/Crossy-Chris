@@ -162,7 +162,10 @@ class Crossy_roads:
                 reward -= 0.5
             
             if self.map.player_pos[0] == 0 or self.map.player_pos[0] == 10:
-                reward -= 5
+                if reward > 0:
+                    reward *= 0.5
+                else:
+                    reward -= 20
 
         return reward,done
     

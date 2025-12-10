@@ -28,8 +28,6 @@ class Agent:
 
         self.model = ANN(13,128,64,4)
         self.trainer = QTrainer(self.model, lr = 0.001, gamma = self.gamma)
-
-        self.speed = 1
     
     def get_state(self):
         #[TL,TM,TR,L,R,
@@ -101,21 +99,17 @@ def train():
     above_halfway_percent = []
     while running:
         #RL
-        before_state = None
-        after_state = None
-        if player_frames % agent.speed == 0:
-            before_state = agent.get_state()
-            prediction = agent.get_prediction(before_state)
-            action = agent.actions[prediction]
+        before_state = agent.get_state()
+        prediction = agent.get_prediction(before_state)
+        action = agent.actions[prediction]
 
         reward,done = game.play(action)
         if reward is None:
             running = False
-        if player_frames % agent.speed == 0:
-            after_state = agent.get_state()
-            print(before_state, prediction,reward,done,after_state)
-            agent.train(before_state, prediction, reward, after_state, done)
-            agent.memorize(before_state,prediction,reward,after_state,done)
+        after_state = agent.get_state()
+        print(before_state, prediction,reward,done,after_state)
+        agent.train(before_state, prediction, reward, after_state, done)
+        agent.memorize(before_state,prediction,reward,after_state,done)
         
         if done:
             if high_score < game.highscore or game.prev_score == 26:
@@ -134,10 +128,10 @@ def train():
             total_score += game.prev_score
             mean_scores.append(total_score / agent.num_games)
             above_halfway_percent.append((above_halfway/agent.num_games)*26)
+        
+        if agent.num_games % 100:
             plot(scores, mean_scores,above_halfway_percent)
 
-
-        action = 0
         player_frames += 1
         game.frames_passed += 1
         clock.tick(30)
