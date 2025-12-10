@@ -80,8 +80,6 @@ class Agent:
 def train():
     pygame.init()
     pygame.display.set_caption("Crossy Chris")
-    normal_logo = pygame.image.load("./game/normal_logo.png")
-    pygame.display.set_icon(normal_logo)
     clock = pygame.time.Clock()
     running = True
     #randomize_cars()

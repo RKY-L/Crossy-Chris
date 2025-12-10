@@ -16,7 +16,7 @@ carpng = pygame.image.load("./game/car.png")
 car_left_img = pygame.image.load("./game/car.png")
 car_right_img = pygame.image.load("./game/rev_car.png")
 
-aichicken = pygame.transform.scale(pygame.image.load("./game/evil_chicken"), (50,50))
+aichicken = pygame.transform.scale(pygame.image.load("./game/evil_chicken.png"), (50,50))
 chickenDisplayed = chicken
 chickentoggle = pygame.transform.scale(pygame.image.load("./game/normal_logo.png"),(75,75))
 evilchickentoggle = pygame.transform.scale(pygame.image.load("./game/evil_logo.png"),(75,75))
@@ -35,7 +35,7 @@ class Crossy_roads:
         self.frames_passed = 0
         self.player_died = False
         self.button_rect = evilchickentoggle.get_rect(topleft=(10, 770))
-        self.chickenDisplayed = chicken
+        self.chickenDisplayed = aichicken
         self.refresh()
         
     def refresh(self):
@@ -67,6 +67,7 @@ class Crossy_roads:
                     car.x = -100
 
     def play(self, aitoggle,action = None):
+        print(aitoggle)
         advanced_foward = False
 
         for event in pygame.event.get():
